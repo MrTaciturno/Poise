@@ -13,9 +13,9 @@
         <label>Might:</label>
         <button onclick="diminuir('might')">-</button>
         <div class="esferas" id="mightEsferas">
-            <div class="esfera" onclick="toggleEsfera(0, 'might')"></div>
             <div class="esfera" onclick="toggleEsfera(1, 'might')"></div>
             <div class="esfera" onclick="toggleEsfera(2, 'might')"></div>
+            <div class="esfera" onclick="toggleEsfera(3, 'might')"></div>
         </div>
         <button onclick="aumentar('might')">+</button>
     </div>
@@ -24,9 +24,9 @@
         <label>Mind:</label>
         <button onclick="diminuir('mind')">-</button>
         <div class="esferas" id="mindEsferas">
-            <div class="esfera" onclick="toggleEsfera(0, 'mind')"></div>
             <div class="esfera" onclick="toggleEsfera(1, 'mind')"></div>
             <div class="esfera" onclick="toggleEsfera(2, 'mind')"></div>
+            <div class="esfera" onclick="toggleEsfera(3, 'mind')"></div>
         </div>
         <button onclick="aumentar('mind')">+</button>
     </div>
@@ -35,9 +35,9 @@
         <label>Mettle:</label>
         <button onclick="diminuir('mettle')">-</button>
         <div class="esferas" id="mettleEsferas">
-            <div class="esfera" onclick="toggleEsfera(0, 'mettle')"></div>
             <div class="esfera" onclick="toggleEsfera(1, 'mettle')"></div>
             <div class="esfera" onclick="toggleEsfera(2, 'mettle')"></div>
+            <div class="esfera" onclick="toggleEsfera(3, 'mettle')"></div>
         </div>
         <button onclick="aumentar('mettle')">+</button>
     </div>
@@ -82,14 +82,8 @@
         const valorAtual = pontos[atributo];
         const novoValor = index;
 
-        if (index == '-1'){
-            pontos.restantes += (valorAtual - novoValor);
-            pontos[atributo] = novoValor;
-            for (let i = 0; i < esferas.length; i++) {
-                esferas[i].classList.toggle('preenchida', i < novoValor);
-            }
-        }
-        else if (novoValor > valorAtual) {
+
+        if (novoValor > valorAtual) {
             if (pontos.restantes >= novoValor - valorAtual) {
                 pontos.restantes -= (novoValor - valorAtual);
                 pontos[atributo] = novoValor;
