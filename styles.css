@@ -5,29 +5,32 @@
         background-size: cover;
     }
     .container {
-        max-width: 500px;
-        margin: 50px auto;
-        padding: 20px;
+        max-width: 200px;
+        margin: 10px auto;
+        padding: 10px;
         border: 8px solid black;
         border-radius: 20px;
-        align-items: center;
+
     }
 
     .atributo {
         margin: 20px 0;
         display: flex;
         align-items: center;
+
     }
 
     label {
         width: 80px;
         font-weight: bold;
-        align-items: center;
+
+
     }
 
     .esferas {
         display: flex;
         gap: 10px;
+
     }
 
     .esfera {
@@ -37,6 +40,7 @@
         border-radius: 50%;
         cursor: pointer;
         display: inline-block;
+
     }
 
     .preenchida {
