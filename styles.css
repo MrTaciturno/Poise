@@ -22,6 +22,7 @@
     label {
         width: 80px;
         font-weight: bold;
+        align-items: center;
     }
 
     .esferas {
