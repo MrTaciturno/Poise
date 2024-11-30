@@ -10,6 +10,7 @@
         padding: 20px;
         border: 8px solid black;
         border-radius: 20px;
+        align-items: center;
     }
 
     .atributo {
