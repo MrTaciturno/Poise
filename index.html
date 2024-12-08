@@ -1,111 +1,67 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
-    <title>Projeto Poise</title>
+    <title>PoiseSimulator</title>
+    
 </head>
 <body>
+    <!-- <header>
+        <h1>Bem-vindo</h1>
+    </header> -->
 
-<div class="container">
-    <div class="atributo">
-        <label>Might:</label>
-        <button onclick="diminuir('might')">-</button>
-        <div class="esferas" id="mightEsferas">
-            <div class="esfera" onclick="toggleEsfera(1, 'might')"></div>
-            <div class="esfera" onclick="toggleEsfera(2, 'might')"></div>
-            <div class="esfera" onclick="toggleEsfera(3, 'might')"></div>
-        </div>
-        <button onclick="aumentar('might')">+</button>
-    </div>
-
-    <div class="atributo">
-        <label>Mind:</label>
-        <button onclick="diminuir('mind')">-</button>
-        <div class="esferas" id="mindEsferas">
-            <div class="esfera" onclick="toggleEsfera(1, 'mind')"></div>
-            <div class="esfera" onclick="toggleEsfera(2, 'mind')"></div>
-            <div class="esfera" onclick="toggleEsfera(3, 'mind')"></div>
-        </div>
-        <button onclick="aumentar('mind')">+</button>
-    </div>
-
-    <div class="atributo">
-        <label>Mettle:</label>
-        <button onclick="diminuir('mettle')">-</button>
-        <div class="esferas" id="mettleEsferas">
-            <div class="esfera" onclick="toggleEsfera(1, 'mettle')"></div>
-            <div class="esfera" onclick="toggleEsfera(2, 'mettle')"></div>
-            <div class="esfera" onclick="toggleEsfera(3, 'mettle')"></div>
-        </div>
-        <button onclick="aumentar('mettle')">+</button>
-    </div>
-
-    <div id="pontos">Pontos Restantes: <span id="pontosRestantes">6</span></div>
+    <main>
+        <section>
+            <h2>Simulador do Poise</h2>
+            <p>Criador de combates simulados</p>
+        </section>
+    </main>
 
 
+    <script>    
+        class Personagem {
+            constructor(nome, might, mind, combatStyle) {
+                this.nome = nome;
+                this.might = might;
+                this.mind = mind;
+                this.mettle = 6 - (might+mind);
+                this.combatStyle = combatStyle; //4, 6, 8, 10, 12
+                //substituir combatStyle por arma/escudo e armadura
 
-    <script>
-        let pontos = {
-            might: 0,
-            mind: 0, 
-            mettle: 0,
-            restantes: 6
-        };
-
-        function atualizarPontos() {
-            // document.getElementById('might').textContent = pontos.might;
-            // document.getElementById('mind').textContent = pontos.mind;
-            // document.getElementById('mettle').textContent = pontos.mettle;
-            document.getElementById('pontosRestantes').textContent = pontos.restantes;
-        }
-
-        function aumentar(atributo) {
-            if (pontos.restantes > 0 && pontos[atributo] < 3) {
-                pontos[atributo]++;
-                pontos.restantes--;
-                atualizarPontos();
-                toggleEsfera(pontos[atributo],atributo);
             }
         }
 
-        function diminuir(atributo) {
-            if (pontos[atributo] > 0) {
-                pontos[atributo]--;
-                pontos.restantes++;
-                toggleEsfera(pontos[atributo],atributo);
-                atualizarPontos();
+        function rolarDados(max){
+            return Math.round(Math.random()*4);
+            
+        }
+        
+
+        const Army = [];
+
+        // //cria 10 Joes iguais
+        // for (let i = 0; i < 10; i++){
+        //     Army.push(new Personagem(`Joe${i}`, 3, 0));
+        // }
+        
+        //cria todas a permutações de atributo
+        let a = 0;
+        for (let i = 0; i <= 3; i++){
+            for(let j = (3-i); j <= 3; j++){
+                Army.push(new Personagem(`Joe${a}`, i, j, 4));
+                a++;
+                console.log (rolarDados(4));
             }
         }
-
-    function toggleEsfera(index, atributo) {
-        const esferas = document.querySelectorAll(`#${atributo}Esferas .esfera`);
-        const valorAtual = pontos[atributo];
-        const novoValor = index;
-
-
-        if (novoValor > valorAtual) {
-            if (pontos.restantes >= novoValor - valorAtual) {
-                pontos.restantes -= (novoValor - valorAtual);
-                pontos[atributo] = novoValor;
-                for (let i = 0; i < esferas.length; i++) {
-                    esferas[i].classList.toggle('preenchida', i < novoValor);
-                }
-            }
-        } else {
-            pontos.restantes += (valorAtual - novoValor);
-            pontos[atributo] = novoValor;
-            for (let i = 0; i < esferas.length; i++) {
-                esferas[i].classList.toggle('preenchida', i < novoValor);
-            }
+      
+        for (let i = 0; i < 10; i++){
+            document.body.innerHTML = document.body.innerHTML + "</br> " + Army[i].nome + " Might :" +  Army[i].might+ " Mind  :" +  Army[i].mind + " Mettle:" +  Army[i].mettle;
+            //console.log(Army[i]);
         }
-        atualizarPontos();
-    }
-</script>
-</div>
 
-<div class="container"> asdasd </div>
+
+    </script>
+
 </body>
 </html>
-
