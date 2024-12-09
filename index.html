@@ -19,7 +19,8 @@
     </main>
 
 
-    <script>    
+    <script>
+
         class Personagem {
             constructor(nome, might, mind, combatStyle) {
                 this.nome = nome;
@@ -32,10 +33,7 @@
             }
         }
 
-        function rolarDados(max){
-            return Math.round(Math.random()*4);
-            
-        }
+
         
 
         const Army = [];
@@ -51,7 +49,6 @@
             for(let j = (3-i); j <= 3; j++){
                 Army.push(new Personagem(`Joe${a}`, i, j, 4));
                 a++;
-                console.log (rolarDados(4));
             }
         }
       

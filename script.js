@@ -1,17 +1,8 @@
-function criarPersonagem() {
-    return {
-        might: 0,
-        mind: 0,
-        mettle: 0
-    };
+function rolarDados(max){
+    return Math.floor(Math.random()*max)+1;
+//conferido! a media de 100000 arremessos deu (1+max)/2;
 }
 
-
-function Personagem() {
-    this.might = 0;
-    this.mind = 0;
-    this.mettle = 0;
-}
 
 
 
