@@ -23,12 +23,18 @@
     <script>
 
         class Personagem {
-            constructor(nome, might, mind, combatStyle) {
+            constructor(nome, might, mind, dadoArma, size) {
+                
                 this.nome = nome;
                 this.might = might;
                 this.mind = mind;
                 this.mettle = 6 - (might+mind);
-                this.combatStyle = combatStyle; //4, 6, 8, 10, 12
+                this.dadoArma = dadoArma; //4, 6, 8, 10, 12
+                this.size = size; // 3 é medio
+                this.costPA = (dadoArma<7 ? 1 : 2);
+                this.totalPA = 3 + this.mettle;
+                this.reach = this.mettle + might;
+                this.desloc = size; //(menos capacidade de carga)
 
                 //substituir combatStyle por arma/escudo e armadura
             }
@@ -46,14 +52,13 @@
         let a = 0;
         for (let i = 0; i <= 3; i++){
             for(let j = (3-i); j <= 3; j++){
-                Army.push(new Personagem(`Joe${a}`, i, j, 4));
+                Army.push(new Personagem(`Joe${a}`, i, j, 8, 3));
                 a++;
             }
         }
       
 
         for (let i = 0; i < 10; i++){
-
             document.body.innerHTML += `
                 <div style="
                     border: 1px solid #ccc;
@@ -68,9 +73,13 @@
                     <p style="margin: 5px 0">Might: ${Army[i].might}</p>
                     <p style="margin: 5px 0">Mind: ${Army[i].mind}</p>
                     <p style="margin: 5px 0">Mettle: ${Army[i].mettle}</p>
-                    <p style="margin: 5px 0">Combat Style: ${Army[i].combatStyle}</p>
+                    <p style="margin: 5px 0">Combat Style: 1d${Army[i].dadoArma}</p>
+                    <p style="margin: 5px 0">Custo em PA: ${Army[i].costPA}</p>
+                    <p style="margin: 5px 0">Total de PA: ${Army[i].totalPA}</p>
+                    <p style="margin: 5px 0">Alcance: ${Army[i].reach}</p>
+                    <p style="margin: 5px 0">Deslocamento: ${Army[i].desloc}</p>
 
-                    <button onclick="alert(rolarDados(${Army[i].combatStyle}))" style="
+                    <button onclick="alert(rolarDados(${Army[i].dadoArma}))" style="
                         padding: 8px 15px;
                         background-color: #4CAF50;
                         color: white;
@@ -79,12 +88,12 @@
                         cursor: pointer;
                         margin-top: 10px;
                     ">
-                        Rolar d${Army[i].combatStyle}
+                        Rolar 1d${Army[i].dadoArma}
                     </button>
                 </div>
             `;
 
-
+         
             //console.log(Army[i]);
         }
 
