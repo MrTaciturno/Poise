@@ -67,7 +67,7 @@
                     <p style="margin: 5px 0">Might: ${Army[i].might}</p>
                     <p style="margin: 5px 0">Mind: ${Army[i].mind}</p>
                     <p style="margin: 5px 0">Mettle: ${Army[i].mettle}</p>
-                    <p style="margin: 5px 0">Mettle: ${Army[i].combatStyle}</p>
+                    <p style="margin: 5px 0">Combat Style: ${Army[i].combatStyle}</p>
 
                     <button onclick="alert(rolarDados(${Army[i].combatStyle}))" style="
                         padding: 8px 15px;
@@ -82,7 +82,18 @@
                     </button>
                 </div>
             `;
-            
+            document.body.innerHTML += `
+                <div style="
+                    margin: 5px 0;
+                    padding: 5px;
+                    background-color: #f0f0f0;
+                    border-radius: 4px;
+                    text-align: center;
+                ">
+                    Resultado do último rolamento: ${rolarDados(Army[i].combatStyle)}
+                </div>
+            `;
+
             //console.log(Army[i]);
         }
 
