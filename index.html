@@ -23,11 +23,12 @@
     <script>
 
         class Personagem {
-            constructor(nome, might, mind, dadoArma, size) {
+            constructor(nome, ciclo, might, mind, dadoArma, size) {
                 
                 this.nome = nome;
                 this.might = might;
                 this.mind = mind;
+                this.ciclo = ciclo;
                 this.mettle = 6 - (might+mind);
                 this.dadoArma = dadoArma; //4, 6, 8, 10, 12
                 this.size = size; // 3 é medio
@@ -35,12 +36,74 @@
                 this.totalPA = 3 + this.mettle;
                 this.reach = this.mettle + might;
                 this.desloc = size; //(menos capacidade de carga)
-
+                this.hitPoints = 10+this.mettle+ciclo;
+                this.mover = function(){
+                    console.log(this.nome+ " moveu");
+                }
+                this.atacar= function(){
+                    console.log("ata");
+                }
+                this.recar= function(){
+                    console.log("rec");
+                }
                 //substituir combatStyle por arma/escudo e armadura
             }
         }
 
+        function combate(Personagem1, Personagem2, distInicial){
+            //alert(Personagem1.hitPoints);
+            // alert(Personagem2.hitPoints);
+            let initiP1 =0
+            let initiP2 = 0;
 
+            //rolar iniciativa
+            while(initiP1==initiP2){
+                initiP1 = rolarDados(6)+Personagem1.mettle;
+                
+                console.log (initiP1);
+
+                initiP2 = rolarDados(6)+Personagem2.mettle;
+ 
+                console.log (initiP2);
+                
+                if (initiP1==initiP2){
+                    console.log ("rerolar");
+                }
+            }
+
+            let primeiro,segundo = new Personagem;
+
+            if(initiP1>initiP2){
+            primeiro = Personagem1;
+            segundo = Personagem2;    
+
+            }
+            if(initiP1<initiP2){
+            primeiro = Personagem2;
+            segundo = Personagem1;
+            }
+            
+            console.log("O " + primeiro.nome + " começa !");
+
+            let distAtual = distInicial;
+            //decisão do primeiro jogador
+            
+            for (let rounds=0;rounds<=10;rounds++){ //trocar por while vida dos char
+            
+            if(distAtual>0);
+                primeiro.mover();
+
+            if(distAtual>0);
+                primeiro.mover();
+
+
+            }
+
+
+        }
+
+        
+        
         const Army = [];
 
         // //cria 10 Joes iguais
@@ -52,7 +115,7 @@
         let a = 0;
         for (let i = 0; i <= 3; i++){
             for(let j = (3-i); j <= 3; j++){
-                Army.push(new Personagem(`Joe${a}`, i, j, 8, 3));
+                Army.push(new Personagem(`Joe${a}`, 1, i, j, 8, 3));
                 a++;
             }
         }
@@ -78,8 +141,9 @@
                     <p style="margin: 5px 0">Total de PA: ${Army[i].totalPA}</p>
                     <p style="margin: 5px 0">Alcance: ${Army[i].reach}</p>
                     <p style="margin: 5px 0">Deslocamento: ${Army[i].desloc}</p>
+                    <p style="margin: 5px 0">Pontos de Vida: ${Army[i].hitPoints}</p>
 
-                    <button onclick="alert(rolarDados(${Army[i].dadoArma}))" style="
+                    <button onclick="combate(Army[0],Army[1], 30)" style="
                         padding: 8px 15px;
                         background-color: #4CAF50;
                         color: white;
@@ -88,7 +152,7 @@
                         cursor: pointer;
                         margin-top: 10px;
                     ">
-                        Rolar 1d${Army[i].dadoArma}
+                        Rolar Combate
                     </button>
                 </div>
             `;

@@ -12,8 +12,6 @@ function rolarDados(max){
 
 
 
-
-
 // //cria 10 Joes iguais
 //const Army = [];
 
