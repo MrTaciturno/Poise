@@ -28,13 +28,11 @@
                 this.mind = mind;
                 this.mettle = 6 - (might+mind);
                 this.combatStyle = combatStyle; //4, 6, 8, 10, 12
-                //substituir combatStyle por arma/escudo e armadura
 
+                //substituir combatStyle por arma/escudo e armadura
             }
         }
 
-
-        
 
         const Army = [];
 
@@ -42,7 +40,7 @@
         // for (let i = 0; i < 10; i++){
         //     Army.push(new Personagem(`Joe${i}`, 3, 0));
         // }
-        
+
         //cria todas a permutações de atributo
         let a = 0;
         for (let i = 0; i <= 3; i++){
@@ -52,8 +50,39 @@
             }
         }
       
+
         for (let i = 0; i < 10; i++){
-            document.body.innerHTML = document.body.innerHTML + "</br> " + Army[i].nome + " Might :" +  Army[i].might+ " Mind  :" +  Army[i].mind + " Mettle:" +  Army[i].mettle;
+
+            document.body.innerHTML += `
+                <div style="
+                    border: 1px solid #ccc;
+                    border-radius: 8px;
+                    padding: 15px;
+                    margin: 10px;
+                    width: 300px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    background-color: #fff;
+                ">
+                    <h3 style="margin: 0 0 10px 0">${Army[i].nome}</h3>
+                    <p style="margin: 5px 0">Might: ${Army[i].might}</p>
+                    <p style="margin: 5px 0">Mind: ${Army[i].mind}</p>
+                    <p style="margin: 5px 0">Mettle: ${Army[i].mettle}</p>
+                    <p style="margin: 5px 0">Mettle: ${Army[i].combatStyle}</p>
+
+                    <button onclick="alert(rolarDados(${Army[i].combatStyle}))" style="
+                        padding: 8px 15px;
+                        background-color: #4CAF50;
+                        color: white;
+                        border: none;
+                        border-radius: 4px;
+                        cursor: pointer;
+                        margin-top: 10px;
+                    ">
+                        Rolar d${Army[i].combatStyle}
+                    </button>
+                </div>
+            `;
+            
             //console.log(Army[i]);
         }
 
