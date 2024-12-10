@@ -49,17 +49,17 @@ function atacar(PAtacante, PAlvo, paSOBRANDO){
         if (roll==PAtacante.dadoArma&&PAtacante.costPA==2) custoPA--; // acerto fulminante
 
         roll = roll + PAtacante.might + PAtacante.ciclo;
-        console.log("Ataque de " +PAtacante.nome+ " contra " + PAlvo.nome + " resultou em " + roll +
-            " (" + (roll-(PAtacante.might + PAtacante.ciclo))+ " + " + (PAtacante.might + PAtacante.ciclo)+")");
-    
         custoPA = custoPA + PAtacante.costPA;
        
-        console.log("Consumiu " + custoPA + " PA.");
-
+        console.log("Ataque de " +PAtacante.nome+ " contra " + PAlvo.nome + " resultou em " + roll +
+            " (" + (roll-(PAtacante.might + PAtacante.ciclo))+ " + " + (PAtacante.might + PAtacante.ciclo)+") e consumiu " + custoPA + " PA.");
+                    
     } else{
         roll = rolarDados(4) + PAtacante.might + PAtacante.ciclo;
-        console.log("Ataque de secundário de " +PAtacante.nome+ " contra " + PAlvo.nome + " resultou em " + roll);
-        console.log("Consumiu 1 PA.");
+
+        console.log("Ataque de secundário de " +PAtacante.nome+ " contra " + PAlvo.nome + " resultou em " + roll +
+            " (" + (roll-(PAtacante.might + PAtacante.ciclo))+ " + " + (PAtacante.might + PAtacante.ciclo)+") e consumiu 1 PA.");
+        
     }
     
     return [roll,custoPA];
@@ -109,14 +109,18 @@ function combate(Personagem1, Personagem2, distInicial){
     let turno = 1;
     let PV1, PV2= 0;
 
-    for (let rounds=0;rounds<=10;rounds++){ //trocar por while vida dos char
-        PV1 = primeiro.hitPoints;
-        PV2 = segundo.hitPoints;
+    //for (let rounds=0;rounds<=10;rounds++){ //trocar por while vida dos char
+    PV1 = primeiro.hitPoints;
+    PV2 = segundo.hitPoints;
+    
+    while((PV1>0)||(PV2>0)){
+        
 
         let resultAtk = [0,0];
         console.log("Começo do Turno " + turno);
         
         console.log("Começou a vez de " + primeiro.nome);
+
         for (let i = 1;i <= primeiro.totalPA;i++){
             if(distAtual!=0) distAtual=mover(distAtual,primeiro);
             if(distAtual==0) {
@@ -124,6 +128,10 @@ function combate(Personagem1, Personagem2, distInicial){
                 if (i!= primeiro.totalPA) resultAtk = atacar(primeiro, segundo, primeiro.totalPA-i);
 
                 if (resultAtk[1] == 2) i++;
+                if (resultAtk[1] == 3) i=i+2;
+                PV2 = PV2-resultAtk[0];
+                console.log("Restam "+ PV2 +" de vida para "+segundo.nome);
+                
             }
 
 
@@ -141,14 +149,20 @@ function combate(Personagem1, Personagem2, distInicial){
                 console.log("Restam "+ (segundo.totalPA-i) +" PA para "+segundo.nome);
                 if (i!= segundo.totalPA) resultAtk = atacar(segundo, primeiro, segundo.totalPA-i);
 
-                if (resultAtk[1] = 2) i++;
+                if (resultAtk[1] == 2) i++;
+                if (resultAtk[1] == 3) i=i+2;
+                
+                PV1 = PV1-resultAtk[0];
+                console.log("Restam "+ PV1 +" de vida para "+primeiro.nome);
+                
             }
 
 
         }
         console.log("Acabou a vez de " + segundo.nome);
         
-        if(distAtual==0){break;}
+        //if(distAtual==0){break;}
+
         console.log("Fim do Turno " + turno);
         console.log("");
         turno++;
