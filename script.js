@@ -40,9 +40,21 @@ function mover(distAtual, PersonagemMovido){
     return distAtual;
 }
 
-function atacar(PersonagemAtacante, PersonagemAlvo){
+function atacar(PAtacante, PAlvo, paSOBRANDO){
+    let roll = 0;
 
-
+    if ((PAtacante.costPA == 1)||(paSOBRANDO>=2)){
+        roll = rolarDados(PAtacante.dadoArma) + PAtacante.might + PAtacante.ciclo;
+        console.log("Ataque de " +PAtacante.nome+ " contra " + PAlvo.nome + " resultou em " + roll +
+            " (" + (roll-(PAtacante.might + PAtacante.ciclo))+ " + " + (PAtacante.might + PAtacante.ciclo)+")");
+        console.log("Consumiu " +PAtacante.costPA + " PA.");
+        
+    } else{
+        roll = rolarDados(4) + PAtacante.might + PAtacante.ciclo;
+        console.log("Ataque de secundário de " +PAtacante.nome+ " contra " + PAlvo.nome + " resultou em " + roll);
+        console.log("Consumiu 1 PA.");
+    }
+    return roll;
 }
 
 function combate(Personagem1, Personagem2, distInicial){
@@ -97,16 +109,19 @@ function combate(Personagem1, Personagem2, distInicial){
         
         console.log("Começou a vez de " + primeiro.nome);
         for (let i = 0;i < primeiro.totalPA;i++){
-            distAtual=mover(distAtual,primeiro);
-            if(distAtual==0){console.log("Restam "+ (primeiro.totalPA-(i+1)) +" PA para "+primeiro.nome);break;}
-            
+            if(distAtual!=0) distAtual=mover(distAtual,primeiro);
+            if(distAtual==0) {console.log("Restam "+ (primeiro.totalPA-(i+1)) +" PA para "+primeiro.nome);
+                if(i>0)atacar(primeiro,segundo,i+1);
+            }
+
 
         }
         console.log("Acabou a vez de " + primeiro.nome);
 
-        
+        console.log("");
+
         if(distAtual==0){break;}
-        
+
         console.log("Começou a vez de " + segundo.nome);
         for (let i = 0;i < segundo.totalPA;i++){
             distAtual=mover(distAtual,segundo);
