@@ -30,34 +30,39 @@ function mover(distAtual, PersonagemMovido){
 
     if (distAtual>a){
         distAtual = distAtual-a;
-        console.log(PersonagemMovido.nome + " moveu " + a +" Distancia atual:" + distAtual);
+        console.log(PersonagemMovido.nome + " moveu " + a +"m. Distância atual: " + distAtual + "m.");
     } else{
-        console.log(PersonagemMovido.nome + " moveu " + distAtual);
-        distAtual=0;
         
+        console.log(PersonagemMovido.nome + " moveu " + distAtual +"m. Chegou em melee.");
+        distAtual=0;
     }
 
     return distAtual;
 }
 
-function atacar(PersonagemAtacante, PersonagemAlvo, ){
+function atacar(PersonagemAtacante, PersonagemAlvo){
 
 
 }
 
 function combate(Personagem1, Personagem2, distInicial){
-
+    console.log ("");
+    console.log ("=-=-=-=COMEÇOU A BATALHA=-=-=-=");
+    console.log ("");
+    console.log ("Os combatentes " + Personagem1.nome + " e " + Personagem2.nome + " estão a " + distInicial + "m de distância.");
+    
     let initiP1 = 0
     let initiP2 = 0;
 
     //rolar iniciativa
     while(initiP1==initiP2){
         initiP1 = rolarDados(6)+Personagem1.mettle;
-        console.log (initiP1);
+        console.log (Personagem1.nome + " obeteve " + initiP1 + " de iniciativa: ("+ (initiP1-Personagem1.mettle) + " + " + Personagem1.mettle + ")" );
         initiP2 = rolarDados(6)+Personagem2.mettle;
-        console.log (initiP2);
+        console.log (Personagem2.nome + " obeteve " + initiP2 + " de iniciativa: ("+ (initiP2-Personagem2.mettle) + " + " + Personagem2.mettle + ")" );
+
         if (initiP1==initiP2){
-            console.log ("rerolar");
+            console.log ("Empate, re-rolar!");
         }
     }
 
@@ -74,27 +79,45 @@ function combate(Personagem1, Personagem2, distInicial){
     }
     
     console.log("O " + primeiro.nome + " começa !");
+    console.log("=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 
     let distAtual = distInicial;
     //decisão do primeiro jogador
    
     
     //aproximação dos players:
+    let turno = 1;
+    let PV1, PV2= 0;
+
     for (let rounds=0;rounds<=10;rounds++){ //trocar por while vida dos char
-    
-    
+        PV1 = primeiro.hitPoints;
+        PV2 = segundo.hitPoints;
+
+        console.log("Começo do Turno " + turno);
+        
+        console.log("Começou a vez de " + primeiro.nome);
         for (let i = 0;i < primeiro.totalPA;i++){
             distAtual=mover(distAtual,primeiro);
-            if(distAtual==0){console.log("chegou no melee. sobrou "+ i +" PA para "+primeiro.nome); break;}
+            if(distAtual==0){console.log("Restam "+ (primeiro.totalPA-(i+1)) +" PA para "+primeiro.nome);break;}
             
+
         }
-        if(distAtual==0){break;}
-        for (let i = 0;i < segundo.totalPA;i++){
-            distAtual=mover(distAtual,segundo);
-            if(distAtual==0){console.log("chegou no melee. sobrou "+ i +" PA para "+segundo.nome); break;}
-        }
+        console.log("Acabou a vez de " + primeiro.nome);
+
+        
         if(distAtual==0){break;}
         
+        console.log("Começou a vez de " + segundo.nome);
+        for (let i = 0;i < segundo.totalPA;i++){
+            distAtual=mover(distAtual,segundo);
+            if(distAtual==0){console.log("Restam "+ (primeiro.totalPA-(i+1)) +" PA para "+segundo.nome); break;}
+        }
+        console.log("Acabou a vez de " + segundo.nome);
+        
+        if(distAtual==0){break;}
+        console.log("Fim do Turno " + turno);
+        console.log("");
+        turno++;
     }
 
 
