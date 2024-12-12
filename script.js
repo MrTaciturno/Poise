@@ -72,10 +72,10 @@ function atacar(PAtacante, PAlvo, paSOBRANDO){
         
         
     }
-    console.log("Resultado total do ataque "+ ((roll*Crit)+Fulm) + ". Sendo: ");
+    console.log("Resultado total do ataque "+ ((rolleDano*Crit)+Fulm) + ". Sendo: " + roll + "+" + PAtacante.might+ "+"+ PAtacante.ciclo );
 
 
-    return [((roll*Crit)+Fulm),custoPA];
+    return [((rolleDano*Crit)+Fulm),custoPA];
 }
 
 function combate(Personagem1, Personagem2, distInicial){
