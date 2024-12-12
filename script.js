@@ -42,6 +42,7 @@ function mover(distAtual, PersonagemMovido){
 
 function atacar(PAtacante, PAlvo, paSOBRANDO){
     let roll = 0;
+    let rolleDano = 0;
     let custoPA = 0;
     let Crit = 1; //multiplicador do resultado; 0 é falha crítica
     let Fulm = 0; //somador de resultado; 0 é não crítico;
@@ -52,27 +53,26 @@ function atacar(PAtacante, PAlvo, paSOBRANDO){
         if (roll==PAtacante.dadoArma&&PAtacante.costPA==2) custoPA--; // acerto fulminante
         if (roll==PAtacante.dadoArma) {Fulm = PAtacante.costPA;}
 
-        roll = roll + PAtacante.might + PAtacante.ciclo;
+        rolleDano = roll + PAtacante.might + PAtacante.ciclo;
         custoPA = custoPA + PAtacante.costPA;
        
-        console.log("Ataque de " +PAtacante.nome+ " contra " + PAlvo.nome + " obteve " + (roll-(PAtacante.might + PAtacante.ciclo)) + " no dado" + (Crit==0 ? " (ERRO CRÍTICO!!!)":"")+ (Fulm!=0 ? " (FULMINANTE!!!)":"")+" e consumiu " + custoPA + " PA.");
+        console.log("Ataque de " +PAtacante.nome+ " contra " + PAlvo.nome + " obteve " + roll + " no dado" + (Crit==0 ? " (ERRO CRÍTICO!!!)":"")+ (Fulm!=0 ? " (FULMINANTE!!!)":"")+" e consumiu " + custoPA + " PA.");
 
-        // console.log("Ataque de " +PAtacante.nome+ " contra " + PAlvo.nome + " resultou em " + roll +
-        //     " (" + (roll-(PAtacante.might + PAtacante.ciclo))+ " + " + (PAtacante.might + PAtacante.ciclo)+") e consumiu " + custoPA + " PA. " + (Crit==0 ? "ERRO CRÍTICO!!!":"")+ (Fulm!=0 ? "FULMINANTE!!!":""));
+     
 
     } else{
-        roll = rolarDados(4) + PAtacante.might + PAtacante.ciclo;
+        roll = rolarDados(4);
         
         if (roll==1) {custoPA++;Crit=0;}
         if (roll==4) {Fulm = 1;}
 
+        rolleDano = roll + PAtacante.might + PAtacante.ciclo;
 
-        console.log("Ataque secundário de " +PAtacante.nome+ " contra " + PAlvo.nome + " obteve " + (roll-(PAtacante.might + PAtacante.ciclo)) + " no dado" + (Crit==0 ? "ERRO CRÍTICO!!!":"")+ (Fulm!=0 ? "FULMINANTE!!!":"")+" e consumiu " + custoPA + " PA.");
-        // console.log("Ataque de secundário de " +PAtacante.nome+ " contra " + PAlvo.nome + " resultou em " + roll +
-        //     " (" + (roll-(PAtacante.might + PAtacante.ciclo))+ " + " + (PAtacante.might + PAtacante.ciclo)+") e consumiu 1 PA. " + (Crit==0 ? "ERRO CRÍTICO!!!":"")+ (Fulm!=0 ? "FULMINANTE!!!":""));
+        console.log("Ataque secundário de " +PAtacante.nome+ " contra " + PAlvo.nome + " obteve " + roll + " no dado" + (Crit==0 ? "ERRO CRÍTICO!!!":"")+ (Fulm!=0 ? "FULMINANTE!!!":"")+" e consumiu " + custoPA + " PA.");
+        
         
     }
-    console.log("Resultado total do ataque "+ ((roll*Crit)+Fulm));
+    console.log("Resultado total do ataque "+ ((roll*Crit)+Fulm) + ". Sendo: ");
 
 
     return [((roll*Crit)+Fulm),custoPA];
