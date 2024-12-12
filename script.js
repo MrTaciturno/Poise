@@ -43,26 +43,39 @@ function mover(distAtual, PersonagemMovido){
 function atacar(PAtacante, PAlvo, paSOBRANDO){
     let roll = 0;
     let custoPA = 0;
+    let Crit = 1; //multiplicador do resultado; 0 é falha crítica
+    let Fulm = 0; //somador de resultado; 0 é não crítico;
+
     if ((PAtacante.costPA == 1)||(paSOBRANDO>=2)){
         roll = rolarDados(PAtacante.dadoArma);
-        if (roll==1) custoPA++; // erro critico
+        if (roll==1) {custoPA++;Crit=0;} // erro critico
         if (roll==PAtacante.dadoArma&&PAtacante.costPA==2) custoPA--; // acerto fulminante
+        if (roll==PAtacante.dadoArma) {Fulm = PAtacante.costPA;}
 
         roll = roll + PAtacante.might + PAtacante.ciclo;
         custoPA = custoPA + PAtacante.costPA;
        
-        console.log("Ataque de " +PAtacante.nome+ " contra " + PAlvo.nome + " resultou em " + roll +
-            " (" + (roll-(PAtacante.might + PAtacante.ciclo))+ " + " + (PAtacante.might + PAtacante.ciclo)+") e consumiu " + custoPA + " PA.");
-                    
+        console.log("Ataque de " +PAtacante.nome+ " contra " + PAlvo.nome + " obteve " + (roll-(PAtacante.might + PAtacante.ciclo)) + " no dado" + (Crit==0 ? " (ERRO CRÍTICO!!!)":"")+ (Fulm!=0 ? " (FULMINANTE!!!)":"")+" e consumiu " + custoPA + " PA.");
+
+        // console.log("Ataque de " +PAtacante.nome+ " contra " + PAlvo.nome + " resultou em " + roll +
+        //     " (" + (roll-(PAtacante.might + PAtacante.ciclo))+ " + " + (PAtacante.might + PAtacante.ciclo)+") e consumiu " + custoPA + " PA. " + (Crit==0 ? "ERRO CRÍTICO!!!":"")+ (Fulm!=0 ? "FULMINANTE!!!":""));
+
     } else{
         roll = rolarDados(4) + PAtacante.might + PAtacante.ciclo;
+        
+        if (roll==1) {custoPA++;Crit=0;}
+        if (roll==4) {Fulm = 1;}
 
-        console.log("Ataque de secundário de " +PAtacante.nome+ " contra " + PAlvo.nome + " resultou em " + roll +
-            " (" + (roll-(PAtacante.might + PAtacante.ciclo))+ " + " + (PAtacante.might + PAtacante.ciclo)+") e consumiu 1 PA.");
+
+        console.log("Ataque secundário de " +PAtacante.nome+ " contra " + PAlvo.nome + " obteve " + (roll-(PAtacante.might + PAtacante.ciclo)) + " no dado" + (Crit==0 ? "ERRO CRÍTICO!!!":"")+ (Fulm!=0 ? "FULMINANTE!!!":"")+" e consumiu " + custoPA + " PA.");
+        // console.log("Ataque de secundário de " +PAtacante.nome+ " contra " + PAlvo.nome + " resultou em " + roll +
+        //     " (" + (roll-(PAtacante.might + PAtacante.ciclo))+ " + " + (PAtacante.might + PAtacante.ciclo)+") e consumiu 1 PA. " + (Crit==0 ? "ERRO CRÍTICO!!!":"")+ (Fulm!=0 ? "FULMINANTE!!!":""));
         
     }
-    
-    return [roll,custoPA];
+    console.log("Resultado total do ataque "+ ((roll*Crit)+Fulm));
+
+
+    return [((roll*Crit)+Fulm),custoPA];
 }
 
 function combate(Personagem1, Personagem2, distInicial){
@@ -126,21 +139,24 @@ function combate(Personagem1, Personagem2, distInicial){
             if(distAtual==0) {
                 console.log("Restam "+ (primeiro.totalPA-i) +" PA para "+primeiro.nome);
                 if (i!= primeiro.totalPA) resultAtk = atacar(primeiro, segundo, primeiro.totalPA-i);
+                //console.log(resultAtk[0]);
+                if ((resultAtk[1] == 0)&&(primeiro.totalPA-i==1)) console.log((primeiro.totalPA-i)-resultAtk[1] + " de PA foi pro Nether!");
 
                 if (resultAtk[1] == 2) i++;
                 if (resultAtk[1] == 3) i=i+2;
-                PV2 = PV2-resultAtk[0];
-                console.log("Restam "+ PV2 +" de vida para "+segundo.nome);
                 
+                PV2 = PV2-resultAtk[0];
+                
+                console.log("Restam "+ PV2 +" de vida para "+segundo.nome);
+                if(PV2<=0) break;
             }
-
 
         }
         console.log("Acabou a vez de " + primeiro.nome);
 
         console.log("");
-
-        if(distAtual==0){break;}
+        if(PV2<=0) break;
+        //if(distAtual==0){break;}
 
         console.log("Começou a vez de " + segundo.nome);
         for (let i = 1;i <= segundo.totalPA;i++){
@@ -148,15 +164,16 @@ function combate(Personagem1, Personagem2, distInicial){
             if(distAtual==0) {
                 console.log("Restam "+ (segundo.totalPA-i) +" PA para "+segundo.nome);
                 if (i!= segundo.totalPA) resultAtk = atacar(segundo, primeiro, segundo.totalPA-i);
+                //console.log(resultAtk[0]);
+                if ((resultAtk[1] == 0)&&(segundo.totalPA-i==1)) console.log((segundo.totalPA-i)-resultAtk[1] + " de PA foi pro Nether!");
 
                 if (resultAtk[1] == 2) i++;
                 if (resultAtk[1] == 3) i=i+2;
                 
                 PV1 = PV1-resultAtk[0];
                 console.log("Restam "+ PV1 +" de vida para "+primeiro.nome);
-                
+                if (PV1<=0)break;
             }
-
 
         }
         console.log("Acabou a vez de " + segundo.nome);
@@ -165,6 +182,7 @@ function combate(Personagem1, Personagem2, distInicial){
 
         console.log("Fim do Turno " + turno);
         console.log("");
+        if (PV1<=0)break;
         turno++;
     }
 
