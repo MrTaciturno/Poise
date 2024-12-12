@@ -68,7 +68,7 @@ function atacar(PAtacante, PAlvo, paSOBRANDO){
 
         rolleDano = roll + PAtacante.might + PAtacante.ciclo;
 
-        console.log("Ataque secundário de " +PAtacante.nome+ " contra " + PAlvo.nome + " obteve " + roll + " no dado" + (Crit==0 ? "ERRO CRÍTICO!!!":"")+ (Fulm!=0 ? "FULMINANTE!!!":"")+" e consumiu " + custoPA + " PA.");
+        console.log("Ataque secundário de " +PAtacante.nome+ " contra " + PAlvo.nome + " obteve " + roll + " no dado" + (Crit==0 ? " (ERRO CRÍTICO!!!)":"")+ (Fulm!=0 ? " (FULMINANTE!!!)":"")+" e consumiu " + custoPA + " PA.");
         
         
     }
