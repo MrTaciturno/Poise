@@ -20,6 +20,9 @@ class Personagem {
         this.reach = this.mettle + might;
         this.desloc = size; //(menos capacidade de carga)
         this.hitPoints = 10+this.mettle+ciclo;
+        this.armadura = 0;
+        this.def = might+ciclo;
+
 
         //substituir combatStyle por arma/escudo e armadura
     }
@@ -124,6 +127,10 @@ function combate(Personagem1, Personagem2, distInicial){
     let turno = 1;
     let PV1, PV2= 0;
 
+    let defFinal = 0;
+    let PAreal1 = 0;
+    let PAreal2 = 0;
+    
     //for (let rounds=0;rounds<=10;rounds++){ //trocar por while vida dos char
     PV1 = primeiro.hitPoints;
     PV2 = segundo.hitPoints;
@@ -136,19 +143,23 @@ function combate(Personagem1, Personagem2, distInicial){
         
         console.log("Começou a vez de " + primeiro.nome);
 
-        for (let i = primeiro.totalPA;i >= 1;i--){
-            
+
+        PAreal1 = (PV1>6 ? primeiro.totalPA : (PV1<3? 3 : PV1));
+
+        for (let i = PAreal1;i >= 1;i--){
             if(distAtual==0) {
                 console.log("Restam "+ i +" PA para "+primeiro.nome);
                 if (i!= 0) {
-                    resultAtk = atacar(primeiro, segundo, i);PV2 = PV2-resultAtk[0];console.log("Restam "+ PV2 +" de vida para "+segundo.nome);
-                
-                    if ((resultAtk[1] == 0)&&(i==1)) console.log( i + " de PA foi pro Nether!");
+                    resultAtk = atacar(primeiro, segundo, i);
 
+                    defFinal = (segundo.armadura<(primeiro.dadoArma/2) ? (primeiro.dadoArma/2) : segundo.armadura) + primeiro.def; // dado negativo ou armadura
+                    PV2 = PV2-(resultAtk[0]-defFinal <= 0 ? 0 : resultAtk[0]-defFinal); // if de def ficou negativo dá 0.
+                    console.log ("Porém "+segundo.nome + " tem Defesa efetiva de " + defFinal + " resultando em: " +(resultAtk[0]-defFinal <= 0 ? 0 : resultAtk[0]-defFinal));
+                    console.log("Restam "+ PV2 +" de vida para "+segundo.nome);
+                    if ((resultAtk[1] == 0)&&(i==1)) console.log( i + " de PA foi pro Nether!");
                     if (resultAtk[1] == 2) i--;
                     if (resultAtk[1] == 3) i=i-2;
                 }
-
                 if(PV2<=0) break;
             }
             if(distAtual!=0) distAtual=mover(distAtual,primeiro);
@@ -158,15 +169,22 @@ function combate(Personagem1, Personagem2, distInicial){
 
         console.log("");
         if(PV2<=0) break;
-        //if(distAtual==0){break;}
 
         console.log("Começou a vez de " + segundo.nome);
-        for (let i = segundo.totalPA;i >= 1;i--){
+        PAreal2 = (PV2>6 ? segundo.totalPA : (PV2<3? 3 : PV2));
+        for (let i = PAreal2;i >= 1;i--){
             
             if(distAtual==0) {
                 console.log("Restam "+ i +" PA para "+segundo.nome);
                 if (i!= 0) {
-                    resultAtk = atacar(segundo, primeiro, i);PV2 = PV2-resultAtk[0];console.log("Restam "+ PV2 +" de vida para "+primeiro.nome);
+                    resultAtk = atacar(segundo, primeiro, i);
+                    defFinal = (primeiro.armadura<(segundo.dadoArma/2) ? (segundo.dadoArma/2) : primeiro.armadura) + segundo.def; // dado negativo ou armadura
+                    
+                    PV1 = PV1-(resultAtk[0]-defFinal <= 0 ? 0 : resultAtk[0]-defFinal); // if de def ficou negativo dá 0.
+
+                    console.log ("Porém "+primeiro.nome + " tem Defesa efetiva de " + defFinal + " resultando em: " +(resultAtk[0]-defFinal <= 0 ? 0 : resultAtk[0]-defFinal));
+                    
+                    console.log("Restam "+ PV1 +" de vida para "+primeiro.nome);
                 
                     if ((resultAtk[1] == 0)&&(i==1)) console.log( i + " de PA foi pro Nether!");
 
