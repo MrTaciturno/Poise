@@ -66,13 +66,15 @@ function atacar(PAtacante, PAlvo, paSOBRANDO){
         if (roll==1) {custoPA++;Crit=0;}
         if (roll==4) {Fulm = 1;}
 
+        custoPA++; //custo normal do ataque secundário
+
         rolleDano = roll + PAtacante.might + PAtacante.ciclo;
 
         console.log("Ataque secundário de " +PAtacante.nome+ " contra " + PAlvo.nome + " obteve " + roll + " no dado" + (Crit==0 ? " (ERRO CRÍTICO!!!)":"")+ (Fulm!=0 ? " (FULMINANTE!!!)":"")+" e consumiu " + custoPA + " PA.");
         
         
     }
-    console.log("Resultado total do ataque "+ (((rolleDano*Crit)+Fulm) + PAtacante.might + PAtacante.ciclo) + ". Sendo: " + roll + "+" + PAtacante.might+ "+"+ PAtacante.ciclo );
+    console.log("Resultado total do ataque "+ ((rolleDano*Crit)+Fulm) + ". Sendo: " + roll + "+" + PAtacante.might+ "+"+ PAtacante.ciclo + (Fulm!=0? "+" + Fulm : ""));
 
 
     return [((rolleDano*Crit)+Fulm),custoPA];
@@ -134,24 +136,24 @@ function combate(Personagem1, Personagem2, distInicial){
         
         console.log("Começou a vez de " + primeiro.nome);
 
-        for (let i = 1;i <= primeiro.totalPA;i++){
-            if(distAtual!=0) distAtual=mover(distAtual,primeiro);
+        for (let i = primeiro.totalPA;i >= 1;i--){
+            
             if(distAtual==0) {
-                console.log("Restam "+ (primeiro.totalPA-i) +" PA para "+primeiro.nome);
-                if (i!= primeiro.totalPA) resultAtk = atacar(primeiro, segundo, primeiro.totalPA-i);
-                //console.log(resultAtk[0]);
-                if ((resultAtk[1] == 0)&&(primeiro.totalPA-i==1)) console.log((primeiro.totalPA-i)-resultAtk[1] + " de PA foi pro Nether!");
+                console.log("Restam "+ i +" PA para "+primeiro.nome);
+                if (i!= 0) {
+                    resultAtk = atacar(primeiro, segundo, i);PV2 = PV2-resultAtk[0];console.log("Restam "+ PV2 +" de vida para "+segundo.nome);
+                
+                    if ((resultAtk[1] == 0)&&(i==1)) console.log( i + " de PA foi pro Nether!");
 
-                if (resultAtk[1] == 2) i++;
-                if (resultAtk[1] == 3) i=i+2;
-                
-                PV2 = PV2-resultAtk[0];
-                
-                console.log("Restam "+ PV2 +" de vida para "+segundo.nome);
+                    if (resultAtk[1] == 2) i--;
+                    if (resultAtk[1] == 3) i=i-2;
+                }
+
                 if(PV2<=0) break;
             }
-
+            if(distAtual!=0) distAtual=mover(distAtual,primeiro);
         }
+
         console.log("Acabou a vez de " + primeiro.nome);
 
         console.log("");
@@ -159,23 +161,24 @@ function combate(Personagem1, Personagem2, distInicial){
         //if(distAtual==0){break;}
 
         console.log("Começou a vez de " + segundo.nome);
-        for (let i = 1;i <= segundo.totalPA;i++){
-            if(distAtual!=0) distAtual=mover(distAtual,segundo);
+        for (let i = segundo.totalPA;i >= 1;i--){
+            
             if(distAtual==0) {
-                console.log("Restam "+ (segundo.totalPA-i) +" PA para "+segundo.nome);
-                if (i!= segundo.totalPA) resultAtk = atacar(segundo, primeiro, segundo.totalPA-i);
-                //console.log(resultAtk[0]);
-                if ((resultAtk[1] == 0)&&(segundo.totalPA-i==1)) console.log((segundo.totalPA-i)-resultAtk[1] + " de PA foi pro Nether!");
-
-                if (resultAtk[1] == 2) i++;
-                if (resultAtk[1] == 3) i=i+2;
+                console.log("Restam "+ i +" PA para "+segundo.nome);
+                if (i!= 0) {
+                    resultAtk = atacar(segundo, primeiro, i);PV2 = PV2-resultAtk[0];console.log("Restam "+ PV2 +" de vida para "+primeiro.nome);
                 
-                PV1 = PV1-resultAtk[0];
-                console.log("Restam "+ PV1 +" de vida para "+primeiro.nome);
-                if (PV1<=0)break;
-            }
+                    if ((resultAtk[1] == 0)&&(i==1)) console.log( i + " de PA foi pro Nether!");
 
+                    if (resultAtk[1] == 2) i--;
+                    if (resultAtk[1] == 3) i=i-2;
+                }
+
+                if(PV2<=0) break;
+            }
+            if(distAtual!=0) distAtual=mover(distAtual,segundo);
         }
+
         console.log("Acabou a vez de " + segundo.nome);
         
         //if(distAtual==0){break;}
