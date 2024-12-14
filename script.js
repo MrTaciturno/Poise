@@ -218,7 +218,7 @@ function combate(Personagem1, Personagem2, distInicial){
         if (PV1<=0)break;
         turno++;
     }
-
+    console.log("Fim da Batalha!! ");
 
 
 }
