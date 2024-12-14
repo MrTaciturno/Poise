@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="script.js"></script>
+    <title>PoiseSimulator</title>
+    
+</head>
+<body>
+    <!-- <header>
+        <h1>Bem-vindo</h1>
+    </header> -->
+
+    <main>
+        <section>
+            <h2>Simulador do Poise</h2>
+            <p>Criador de combates simulados aperte F12 para ver o console</p>
+        </section>
+    </main>
+
+
+
+    <script>
+
+        const Army = [];
+        Army[0] = new Personagem("Carlos", 1, 3, 0,6, 3);
+        Army[1] = new Personagem("Jennifer", 1, 3, 0, 6, 3);
+
+        // let a = 0;
+        // for (let i = 0; i <= 3; i++){
+        //     for(let j = (3-i); j <= 3; j++){
+        //         Army.push(new Personagem(`Joe${a}`, 1, i, j, 8, 3));
+        //         a++;
+        //     }
+        // }
+        
+        const formulario = document.createElement('div');
+        formulario.style.cssText = `
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px;
+            width: 300px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background-color: #fff;
+        `;
+
+        formulario.innerHTML = `
+            <h3 style="margin: 0 0 10px 0">Criar Novo Personagem</h3>
+            
+            <label for="nome">Nome:</label>
+            <input type="text" id="nome" style="margin: 5px 0; width: 100%"><br>
+            
+            <label for="might">Might:</label>
+            <input type="number" id="might" min="0" max="3" style="margin: 5px 0"><br>
+            
+            <label for="mind">Mind:</label>
+            <input type="number" id="mind" min="0" max="3" style="margin: 5px 0"><br>
+            
+            <label for="mettle">Mettle:</label>
+            <input type="number" id="mettle" min="0" max="3" style="margin: 5px 0"><br>
+            
+            <label for="dadoArma">Combat Style (dado):</label>
+            <input type="number" id="dadoArma" min="4" max="12" step="2" style="margin: 5px 0"><br>
+            
+            <label for="costPA">Custo em PA:</label>
+            <input type="number" id="costPA" min="1" style="margin: 5px 0"><br>
+            
+            <button onclick="criarPersonagem()" style="
+                padding: 8px 15px;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                margin-top: 10px;
+            ">
+                Criar Personagem
+            </button>
+        `;
+
+        document.body.insertBefore(formulario, document.body.firstChild);
+
+        function criarPersonagem() {
+            const nome = document.getElementById('nome').value;
+            const might = parseInt(document.getElementById('might').value);
+            const mind = parseInt(document.getElementById('mind').value);
+            const mettle = parseInt(document.getElementById('mettle').value);
+            const dadoArma = parseInt(document.getElementById('dadoArma').value);
+            const costPA = parseInt(document.getElementById('costPA').value);
+
+            if(nome && !isNaN(might) && !isNaN(mind) && !isNaN(mettle) && !isNaN(dadoArma) && !isNaN(costPA)) {
+                const novoPersonagem = new Personagem(nome, might, mind, mettle, dadoArma, costPA);
+                Army.push(novoPersonagem);
+                location.reload();
+            } else {
+                alert('Por favor, preencha todos os campos corretamente');
+            }
+        }
+
+        for (let i = 0; i < Army.length; i++){
+            document.body.innerHTML += `
+                <div style="
+                    border: 1px solid #ccc;
+                    border-radius: 8px;
+                    padding: 15px;
+                    margin: 10px;
+                    width: 300px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    background-color: #fff;
+                ">
+                    <h3 style="margin: 0 0 10px 0">${Army[i].nome}</h3>
+                    <p style="margin: 5px 0">Might: ${Army[i].might}</p>
+                    <p style="margin: 5px 0">Mind: ${Army[i].mind}</p>
+                    <p style="margin: 5px 0">Mettle: ${Army[i].mettle}</p>
+                    <p style="margin: 5px 0">Combat Style: 1d${Army[i].dadoArma}</p>
+                    <p style="margin: 5px 0">Custo em PA: ${Army[i].costPA}</p>
+                    <p style="margin: 5px 0">Total de PA: ${Army[i].totalPA}</p>
+                    <p style="margin: 5px 0">Alcance: ${Army[i].reach}</p>
+                    <p style="margin: 5px 0">Deslocamento: ${Army[i].desloc}</p>
+                    <p style="margin: 5px 0">Pontos de Vida: ${Army[i].hitPoints}</p>
+
+                    <button onclick="" style="
+                        padding: 8px 15px;
+                        background-color: #4CAF50;
+                        color: white;
+                        border: none;
+                        border-radius: 4px;
+                        cursor: pointer;
+                        margin-top: 10px;
+                    ">
+                        Botão 1
+                    </button>
+                    
+                </div>
+            `;
+
+         
+            //console.log(Army[i]);
+        }
+
+
+    </script>
+    <button onclick="combate(Army[0],Army[1], rolarDados(50))" style="
+    padding: 8px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    ">Rolar Combate</button>
+
+</body>
+</html>

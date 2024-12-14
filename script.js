@@ -33,10 +33,11 @@ function mover(distAtual, PersonagemMovido){
 
     if (distAtual>a){
         distAtual = distAtual-a;
-        console.log(PersonagemMovido.nome + " moveu " + a +"m. Distância atual: " + distAtual + "m.");
+        console.log(PersonagemMovido.nome + " moveu " + a +"m. Distância : " + distAtual + "m.");
     } else{
         
         console.log(PersonagemMovido.nome + " moveu " + distAtual +"m. Chegou em melee.");
+        //console.log("");
         distAtual=0;
     }
 
@@ -49,6 +50,7 @@ function atacar(PAtacante, PAlvo, paSOBRANDO){
     let custoPA = 0;
     let Crit = 1; //multiplicador do resultado; 0 é falha crítica
     let Fulm = 0; //somador de resultado; 0 é não crítico;
+    let secundario = false;
 
     if ((PAtacante.costPA == 1)||(paSOBRANDO>=2)){
         roll = rolarDados(PAtacante.dadoArma);
@@ -59,11 +61,12 @@ function atacar(PAtacante, PAlvo, paSOBRANDO){
         rolleDano = roll + PAtacante.might + PAtacante.ciclo;
         custoPA = custoPA + PAtacante.costPA;
        
-        console.log("Ataque de " +PAtacante.nome+ " contra " + PAlvo.nome + " obteve " + roll + " no dado" + (Crit==0 ? " (ERRO CRÍTICO!!!)":"")+ (Fulm!=0 ? " (FULMINANTE!!!)":"")+" e consumiu " + custoPA + " PA.");
+        // console.log(PAtacante.nome+ " ataca " + PAlvo.nome + ". Tirou " + roll + " no d"+ PAtacante.dadoArma + (Crit==0 ? " (ERRO CRÍTICO!!!)":"")+ (Fulm!=0 ? " (FULMINANTE!!!)":"")+" e consumiu " + custoPA + "PA, restando "+ paSOBRANDO-custoPA+"PA.");
 
      
 
     } else{
+        secundario = true;
         roll = rolarDados(4);
         
         if (roll==1) {custoPA++;Crit=0;}
@@ -73,14 +76,25 @@ function atacar(PAtacante, PAlvo, paSOBRANDO){
 
         rolleDano = roll + PAtacante.might + PAtacante.ciclo;
 
-        console.log("Ataque secundário de " +PAtacante.nome+ " contra " + PAlvo.nome + " obteve " + roll + " no dado" + (Crit==0 ? " (ERRO CRÍTICO!!!)":"")+ (Fulm!=0 ? " (FULMINANTE!!!)":"")+" e consumiu " + custoPA + " PA.");
+        //console.log("Ataque secundário de " +PAtacante.nome+ " contra " + PAlvo.nome + " obteve " + roll + " no dado" + (Crit==0 ? " (ERRO CRÍTICO!!!)":"")+ (Fulm!=0 ? " (FULMINANTE!!!)":"")+" e consumiu " + custoPA + " PA.");
         
         
     }
-    console.log("Resultado total do ataque "+ ((rolleDano*Crit)+Fulm) + ". Sendo: " + roll + "+" + PAtacante.might+ "+"+ PAtacante.ciclo + (Fulm!=0? "+" + Fulm : ""));
 
+    let defFinal = (secundario? (PAlvo.armadura<2 ? 2 : PAlvo.armadura) + PAlvo.def : (PAlvo.armadura<(PAtacante.dadoArma/2) ? (PAtacante.dadoArma/2) : PAlvo.armadura) + PAlvo.def);
+    let danoFinal = (((rolleDano*Crit)+Fulm)-defFinal <= 0 ? 0 : ((rolleDano*Crit)+Fulm)-defFinal);
+    
+    console.log(PAtacante.nome+ " ataca" + (secundario?"(soco) ":"(arma) ") + PAlvo.nome + ". Tirou " + roll + " no d"+ (secundario? 4 : PAtacante.dadoArma) + (Crit==0 ? " (ERRO CRÍTICO!!!)":"")+ (Fulm!=0 ? " (FULMINANTE!!!)":"") + " Total:" +((rolleDano*Crit)+Fulm) + "(" + roll + "+" + PAtacante.might+ "+"+ PAtacante.ciclo + (Fulm!=0? "+" + Fulm : "")+")."+" Subtraindo a Defesa efetiva de " +PAlvo.nome+"("+defFinal + ") resultando em " +(danoFinal <= 0 ? 0 : danoFinal) + " de dano"
+    
+    
+    
+    +" e consumiu " + custoPA + "PA, restando "+ (paSOBRANDO-custoPA<0? 0 : paSOBRANDO-custoPA) + "PA.");
+    
+    //console.log("Resultado total do ataque "+ ((rolleDano*Crit)+Fulm) + "(" + roll + "+" + PAtacante.might+ "+"+ PAtacante.ciclo + (Fulm!=0? "+" + Fulm : "")+").");
 
-    return [((rolleDano*Crit)+Fulm),custoPA];
+    //console.log("Porém "+PAlvo.nome + " tem Defesa efetiva de " + defFinal + " resultando em: " +(danoFinal <= 0 ? 0 : danoFinal) + " de dano.");
+
+    return [danoFinal,custoPA,roll];
 }
 
 function combate(Personagem1, Personagem2, distInicial){
@@ -118,6 +132,7 @@ function combate(Personagem1, Personagem2, distInicial){
     
     console.log("O " + primeiro.nome + " começa !");
     console.log("=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+    console.log("");
 
     let distAtual = distInicial;
     //decisão do primeiro jogador
@@ -138,29 +153,27 @@ function combate(Personagem1, Personagem2, distInicial){
     while((PV1>0)||(PV2>0)){
         
 
-        let resultAtk = [0,0];
+        let resultAtk = [0,0,0];
         console.log("Começo do Turno " + turno);
         
-        console.log("Começou a vez de " + primeiro.nome);
-
-
         PAreal1 = (PV1>6 ? primeiro.totalPA : (PV1<3? 3 : PV1));
+        console.log("Começou a vez de: " + primeiro.nome + " (PV:"+PV1+" PA:"+PAreal1+")");
 
         for (let i = PAreal1;i >= 1;i--){
+ 
             if(distAtual==0) {
-                console.log("Restam "+ i +" PA para "+primeiro.nome);
+                console.log("");
                 if (i!= 0) {
                     resultAtk = atacar(primeiro, segundo, i);
-
-                    defFinal = (segundo.armadura<(primeiro.dadoArma/2) ? (primeiro.dadoArma/2) : segundo.armadura) + primeiro.def; // dado negativo ou armadura
-                    PV2 = PV2-(resultAtk[0]-defFinal <= 0 ? 0 : resultAtk[0]-defFinal); // if de def ficou negativo dá 0.
-                    console.log ("Porém "+segundo.nome + " tem Defesa efetiva de " + defFinal + " resultando em: " +(resultAtk[0]-defFinal <= 0 ? 0 : resultAtk[0]-defFinal));
-                    console.log("Restam "+ PV2 +" de vida para "+segundo.nome);
-                    if ((resultAtk[1] == 0)&&(i==1)) console.log( i + " de PA foi pro Nether!");
+                    //defFinal = (segundo.armadura<(primeiro.dadoArma/2) ? (primeiro.dadoArma/2) : segundo.armadura) + primeiro.def; // dado negativo ou armadura
+                    //PV2 = PV2-(resultAtk[0]-defFinal <= 0 ? 0 : resultAtk[0]-defFinal); // if def ficou negativo dá 0.
+                    PV2 = PV2 - resultAtk[0];
+                    console.log("Resta "+ PV2 +" de vida para " + segundo.nome);
+                    if (resultAtk[1] > i) console.log( resultAtk[1]-i + " de PA foi pro Nether!");
                     if (resultAtk[1] == 2) i--;
                     if (resultAtk[1] == 3) i=i-2;
                 }
-                if(PV2<=0) break;
+                if(PV2<=0) {console.log(segundo.nome + " caiu!!"); break;}
             }
             if(distAtual!=0) distAtual=mover(distAtual,primeiro);
         }
@@ -170,29 +183,28 @@ function combate(Personagem1, Personagem2, distInicial){
         console.log("");
         if(PV2<=0) break;
 
-        console.log("Começou a vez de " + segundo.nome);
         PAreal2 = (PV2>6 ? segundo.totalPA : (PV2<3? 3 : PV2));
+        console.log("Começou a vez de " + segundo.nome+ " (PV:"+PV2+" PA:"+PAreal2+")");
         for (let i = PAreal2;i >= 1;i--){
             
             if(distAtual==0) {
-                console.log("Restam "+ i +" PA para "+segundo.nome);
+                console.log("");
                 if (i!= 0) {
                     resultAtk = atacar(segundo, primeiro, i);
-                    defFinal = (primeiro.armadura<(segundo.dadoArma/2) ? (segundo.dadoArma/2) : primeiro.armadura) + segundo.def; // dado negativo ou armadura
+                    //defFinal = (primeiro.armadura<(segundo.dadoArma/2) ? (segundo.dadoArma/2) : primeiro.armadura) + segundo.def; // dado negativo ou armadura
                     
-                    PV1 = PV1-(resultAtk[0]-defFinal <= 0 ? 0 : resultAtk[0]-defFinal); // if de def ficou negativo dá 0.
-
-                    console.log ("Porém "+primeiro.nome + " tem Defesa efetiva de " + defFinal + " resultando em: " +(resultAtk[0]-defFinal <= 0 ? 0 : resultAtk[0]-defFinal));
-                    
-                    console.log("Restam "+ PV1 +" de vida para "+primeiro.nome);
+                    //PV1 = PV1-(resultAtk[0]-defFinal <= 0 ? 0 : resultAtk[0]-defFinal); // if de def ficou negativo dá 0.
+                    PV1 = PV1 - resultAtk[0];
+                    //console.log("Porém "+primeiro.nome + " tem Defesa efetiva de " + defFinal + " resultando em: " +(resultAtk[0]-defFinal <= 0 ? 0 : resultAtk[0]-defFinal) + " de dano e 
+                    console.log("Resta "+ PV1 +" de vida para " + primeiro.nome);
                 
-                    if ((resultAtk[1] == 0)&&(i==1)) console.log( i + " de PA foi pro Nether!");
+                    if (resultAtk[1] > i) console.log( resultAtk[1]-i + " de PA foi pro Nether!");
 
                     if (resultAtk[1] == 2) i--;
                     if (resultAtk[1] == 3) i=i-2;
                 }
 
-                if(PV2<=0) break;
+                if(PV1<=0) {console.log(primeiro.nome + " caiu!!"); break;}
             }
             if(distAtual!=0) distAtual=mover(distAtual,segundo);
         }
