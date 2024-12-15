@@ -14,7 +14,7 @@
     }
     body {
         background-color: #f4e4bc;
-        background-image: url('a2.png');
+        /* background-image: url('a2.png'); */
         background-size: cover;
     }
     .container {

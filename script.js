@@ -60,10 +60,7 @@ function atacar(PAtacante, PAlvo, paSOBRANDO){
 
         rolleDano = roll + PAtacante.might + PAtacante.ciclo;
         custoPA = custoPA + PAtacante.costPA;
-       
-        // console.log(PAtacante.nome+ " ataca " + PAlvo.nome + ". Tirou " + roll + " no d"+ PAtacante.dadoArma + (Crit==0 ? " (ERRO CRÍTICO!!!)":"")+ (Fulm!=0 ? " (FULMINANTE!!!)":"")+" e consumiu " + custoPA + "PA, restando "+ paSOBRANDO-custoPA+"PA.");
 
-     
 
     } else{
         secundario = true;
@@ -76,24 +73,14 @@ function atacar(PAtacante, PAlvo, paSOBRANDO){
 
         rolleDano = roll + PAtacante.might + PAtacante.ciclo;
 
-        //console.log("Ataque secundário de " +PAtacante.nome+ " contra " + PAlvo.nome + " obteve " + roll + " no dado" + (Crit==0 ? " (ERRO CRÍTICO!!!)":"")+ (Fulm!=0 ? " (FULMINANTE!!!)":"")+" e consumiu " + custoPA + " PA.");
-        
-        
     }
 
     let defFinal = (secundario? (PAlvo.armadura<2 ? 2 : PAlvo.armadura) + PAlvo.def : (PAlvo.armadura<(PAtacante.dadoArma/2) ? (PAtacante.dadoArma/2) : PAlvo.armadura) + PAlvo.def);
     let danoFinal = (((rolleDano*Crit)+Fulm)-defFinal <= 0 ? 0 : ((rolleDano*Crit)+Fulm)-defFinal);
     
     console.log(PAtacante.nome+ " ataca" + (secundario?"(d4) ": "(d"+PAtacante.dadoArma+") ") + PAlvo.nome + ". Tirou " + roll + " no d"+ (secundario? 4 : PAtacante.dadoArma) + (Crit==0 ? " (ERRO CRÍTICO!!!)":"")+ (Fulm!=0 ? " (FULMINANTE!!!)":"") + " Total:" +((rolleDano*Crit)+Fulm) + "(" + roll + "+" + PAtacante.might+ "+"+ PAtacante.ciclo + (Fulm!=0? "+" + Fulm : "")+")."+" Subtraindo a Defesa efetiva de " +PAlvo.nome+"("+defFinal + ") resultando em " +(danoFinal <= 0 ? 0 : danoFinal) + " de dano"
-    
-    
-    
     +" e consumiu " + custoPA + "PA, restando "+ (paSOBRANDO-custoPA<0? 0 : paSOBRANDO-custoPA) + "PA.");
     
-    //console.log("Resultado total do ataque "+ ((rolleDano*Crit)+Fulm) + "(" + roll + "+" + PAtacante.might+ "+"+ PAtacante.ciclo + (Fulm!=0? "+" + Fulm : "")+").");
-
-    //console.log("Porém "+PAlvo.nome + " tem Defesa efetiva de " + defFinal + " resultando em: " +(danoFinal <= 0 ? 0 : danoFinal) + " de dano.");
-
     return [danoFinal,custoPA,roll];
 }
 
