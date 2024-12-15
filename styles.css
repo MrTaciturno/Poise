@@ -1,4 +1,4 @@
-    card {
+    div.card {
         border: 1px solid #ccc;
         border-radius: 8px;
         padding: 15px;
@@ -8,6 +8,10 @@
         background-color: #fff;
     }
 
+    p{
+        padding: 0px;
+        margin: 5px;
+    }
     body {
         background-color: #f4e4bc;
         background-image: url('a2.png');
@@ -29,11 +33,10 @@
 
     }
 
+    
     label {
-        width: 80px;
+        width: 40px;
         font-weight: bold;
-
-
     }
 
     .esferas {

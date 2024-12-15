@@ -84,7 +84,7 @@ function atacar(PAtacante, PAlvo, paSOBRANDO){
     let defFinal = (secundario? (PAlvo.armadura<2 ? 2 : PAlvo.armadura) + PAlvo.def : (PAlvo.armadura<(PAtacante.dadoArma/2) ? (PAtacante.dadoArma/2) : PAlvo.armadura) + PAlvo.def);
     let danoFinal = (((rolleDano*Crit)+Fulm)-defFinal <= 0 ? 0 : ((rolleDano*Crit)+Fulm)-defFinal);
     
-    console.log(PAtacante.nome+ " ataca" + (secundario?"(d4) ": "(d"+PAtacante.dadoArma+")") + PAlvo.nome + ". Tirou " + roll + " no d"+ (secundario? 4 : PAtacante.dadoArma) + (Crit==0 ? " (ERRO CRÍTICO!!!)":"")+ (Fulm!=0 ? " (FULMINANTE!!!)":"") + " Total:" +((rolleDano*Crit)+Fulm) + "(" + roll + "+" + PAtacante.might+ "+"+ PAtacante.ciclo + (Fulm!=0? "+" + Fulm : "")+")."+" Subtraindo a Defesa efetiva de " +PAlvo.nome+"("+defFinal + ") resultando em " +(danoFinal <= 0 ? 0 : danoFinal) + " de dano"
+    console.log(PAtacante.nome+ " ataca" + (secundario?"(d4) ": "(d"+PAtacante.dadoArma+") ") + PAlvo.nome + ". Tirou " + roll + " no d"+ (secundario? 4 : PAtacante.dadoArma) + (Crit==0 ? " (ERRO CRÍTICO!!!)":"")+ (Fulm!=0 ? " (FULMINANTE!!!)":"") + " Total:" +((rolleDano*Crit)+Fulm) + "(" + roll + "+" + PAtacante.might+ "+"+ PAtacante.ciclo + (Fulm!=0? "+" + Fulm : "")+")."+" Subtraindo a Defesa efetiva de " +PAlvo.nome+"("+defFinal + ") resultando em " +(danoFinal <= 0 ? 0 : danoFinal) + " de dano"
     
     
     
@@ -109,9 +109,9 @@ function combate(Personagem1, Personagem2, distInicial){
     //rolar iniciativa
     while(initiP1==initiP2){
         initiP1 = rolarDados(6)+Personagem1.mettle;
-        console.log (Personagem1.nome + " obeteve " + initiP1 + " de iniciativa: ("+ (initiP1-Personagem1.mettle) + " + " + Personagem1.mettle + ")" );
+        console.log (Personagem1.nome + " obteve " + initiP1 + " de iniciativa: ("+ (initiP1-Personagem1.mettle) + " + " + Personagem1.mettle + ")" );
         initiP2 = rolarDados(6)+Personagem2.mettle;
-        console.log (Personagem2.nome + " obeteve " + initiP2 + " de iniciativa: ("+ (initiP2-Personagem2.mettle) + " + " + Personagem2.mettle + ")" );
+        console.log (Personagem2.nome + " obteve " + initiP2 + " de iniciativa: ("+ (initiP2-Personagem2.mettle) + " + " + Personagem2.mettle + ")" );
 
         if (initiP1==initiP2){
             console.log ("Empate, re-rolar!");
