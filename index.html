@@ -59,7 +59,72 @@
                 document.getElementById('desloc2').nextElementSibling.textContent = tam;
             });
         });
+        // Função para ler arquivo CSV padrão
+        async function lerCSVPadrao() {
+            try {
+                const resposta = await fetch('Cálculo de Danos Possíveis - Menus.csv');
+                const dados = await resposta.text();
+                processarDadosCSV(dados);
+            } catch (erro) {
+                console.error('Erro ao ler arquivo CSV padrão:', erro);
+            }
+        }
+
+        // Função para permitir upload de CSV personalizado
+        function configurarUploadCSV() {
+            const inputArquivo = document.createElement('input');
+            inputArquivo.type = 'file';
+            inputArquivo.accept = '.csv';
+            inputArquivo.style.display = 'none';
+            
+            inputArquivo.addEventListener('change', (evento) => {
+                const arquivo = evento.target.files[0];
+                if (arquivo) {
+                    const leitor = new FileReader();
+                    leitor.onload = (e) => {
+                        const conteudo = e.target.result;
+                        processarDadosCSV(conteudo);
+                    };
+                    leitor.readAsText(arquivo);
+                }
+            });
+
+            document.body.appendChild(inputArquivo);
+            return inputArquivo;
+        }
+
+        // Função para processar os dados do CSV
+        function processarDadosCSV(conteudoCSV) {
+            const linhas = conteudoCSV.split('\n');
+            const dados = [];
+            
+            for (let i = 1; i < linhas.length; i++) { // Começa do 1 para pular o cabeçalho
+                if (linhas[i].trim() !== '') {
+                    const valores = linhas[i].split(',');
+                    dados.push(valores);
+                }
+            }
+            
+            console.log('Dados importados:', dados);
+            return dados;
+        }
+
+        // Configurar botões para importação
+        const inputArquivo = configurarUploadCSV();
+        
+        const btnImportarPadrao = document.createElement('button');
+        btnImportarPadrao.textContent = 'Importar CSV Padrão';
+        btnImportarPadrao.onclick = lerCSVPadrao;
+        
+        const btnImportarPersonalizado = document.createElement('button');
+        btnImportarPersonalizado.textContent = 'Importar CSV Personalizado';
+        btnImportarPersonalizado.onclick = () => inputArquivo.click();
+
+        // Adicionar botões à página
+        document.querySelector('section').appendChild(btnImportarPadrao);
+        document.querySelector('section').appendChild(btnImportarPersonalizado);
     </script>
+
     <div class="card">
         <label for="nome1">Nome  :</label> <input type="text" id="nome1" name="nome1" value="Jennifer">
         <p><label for="ciclo1">Ciclo :</label> <input type="number" id="ciclo1" name="ciclo1" min="0" max="3" value="1"></p>
