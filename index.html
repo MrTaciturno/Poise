@@ -131,6 +131,34 @@
         <p><label for="might1">Might :</label> <input type="number" id="might1" name="might1" min="0" max="3" value="3"></p>
         <p><label for="mind1">Mind  :</label> <input type="number" id="mind1" name="mind1" min="0" max="3" value="0"></p>
         <label id="mettle1">Mettle:</label> <span>3</span>
+
+       
+        <p><label for="personagemCSV1">Personagem do CSV:</label>
+        <select id="personagemCSV1" name="personagemCSV1">
+            <option value="">Selecione um personagem</option>
+        </select></p>
+        <script>
+            // Atualiza o dropdown com os dados do CSV
+            function atualizarDropdownPersonagens(dados) {
+                const dropdown = document.getElementById('personagemCSV1');
+                dropdown.innerHTML = '<option value="">Selecione um personagem</option>';
+                
+                dados.forEach((linha, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = linha[0]; // Assume que o nome está na primeira coluna
+                    dropdown.appendChild(option);
+                });
+            }
+
+            // Modifica a função processarDadosCSV para atualizar o dropdown
+            const processarDadosCSVOriginal = processarDadosCSV;
+            processarDadosCSV = function(conteudoCSV) {
+                const dados = processarDadosCSVOriginal(conteudoCSV);
+                atualizarDropdownPersonagens(dados);
+                return dados;
+            }
+        </script>
         <p><label for="dadoArma1">Dado de Ataque:</label>
         <select id="dadoArma1" name="dadoArma1">
             <option value="4">d4</option>
