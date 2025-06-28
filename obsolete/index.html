@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="script.js"></script>
+    <link rel="stylesheet" href="styles.css">
+    <title>PoiseSimulator</title>
+    
+</head>
+<body>
+    <main>
+        <section>
+            <h2>Simulador do Poise</h2>
+            <p>Criador de combates simulados aperte F12 para ver o console</p>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('might1').addEventListener('change', () => atualizarMettle(1));
+            document.getElementById('mind1').addEventListener('change', () => atualizarMettle(1));
+            document.getElementById('ciclo1').addEventListener('change', () => atualizarMettle(1));
+            document.getElementById('might2').addEventListener('change', () => atualizarMettle(2));
+            document.getElementById('mind2').addEventListener('change', () => atualizarMettle(2));
+            document.getElementById('ciclo2').addEventListener('change', () => atualizarMettle(2));
+            
+            document.getElementById('dadoArma1').addEventListener('change', function() {
+                const dadoSelecionado = parseInt(this.value);
+                const custoPA = dadoSelecionado < 7 ? 1 : 2;
+                document.getElementById('custoPA1').nextElementSibling.textContent = custoPA;
+            });
+
+            document.getElementById('dadoArma2').addEventListener('change', function() {
+                const dadoSelecionado = parseInt(this.value);
+                const custoPA = dadoSelecionado < 7 ? 1 : 2;
+                document.getElementById('custoPA2').nextElementSibling.textContent = custoPA;
+            });
+
+            function atualizarMettle(index) {
+                const might = parseInt(document.getElementById('might'+index).value) || 0;
+                const mind = parseInt(document.getElementById('mind'+index).value) || 0;
+                const ciclo = parseInt(document.getElementById('ciclo'+index).value) || 0;
+                
+                const mettle = (6 - (might + mind)>3? 3: 6 - (might + mind));
+                document.getElementById('mettle'+index).nextElementSibling.textContent = mettle;
+                document.getElementById('totalPA'+index).nextElementSibling.textContent = 3+mettle;
+                document.getElementById('Alcance'+index).nextElementSibling.textContent = might+mettle;
+                document.getElementById('pVida'+index).nextElementSibling.textContent = 10+mettle+ciclo;
+            }
+
+            document.getElementById('tamanho1').addEventListener('change', function() {
+                const tam = parseInt(this.value);
+                document.getElementById('desloc1').nextElementSibling.textContent = tam;
+            });
+
+            document.getElementById('tamanho2').addEventListener('change', function() {
+                const tam = parseInt(this.value);
+                document.getElementById('desloc2').nextElementSibling.textContent = tam;
+            });
+        });
+        // Função para ler arquivo CSV padrão
+        async function lerCSVPadrao() {
+            try {
+                const resposta = await fetch('Cálculo de Danos Possíveis - Menus.csv');
+                const dados = await resposta.text();
+                processarDadosCSV(dados);
+            } catch (erro) {
+                console.error('Erro ao ler arquivo CSV padrão:', erro);
+            }
+        }
+
+        // Função para permitir upload de CSV personalizado
+        function configurarUploadCSV() {
+            const inputArquivo = document.createElement('input');
+            inputArquivo.type = 'file';
+            inputArquivo.accept = '.csv';
+            inputArquivo.style.display = 'none';
+            
+            inputArquivo.addEventListener('change', (evento) => {
+                const arquivo = evento.target.files[0];
+                if (arquivo) {
+                    const leitor = new FileReader();
+                    leitor.onload = (e) => {
+                        const conteudo = e.target.result;
+                        processarDadosCSV(conteudo);
+                    };
+                    leitor.readAsText(arquivo);
+                }
+            });
+
+            document.body.appendChild(inputArquivo);
+            return inputArquivo;
+        }
+
+        // Função para processar os dados do CSV
+        function processarDadosCSV(conteudoCSV) {
+            const linhas = conteudoCSV.split('\n');
+            const dados = [];
+            
+            for (let i = 1; i < linhas.length; i++) { // Começa do 1 para pular o cabeçalho
+                if (linhas[i].trim() !== '') {
+                    const valores = linhas[i].split(',');
+                    dados.push(valores);
+                }
+            }
+            
+            console.log('Dados importados:', dados);
+            return dados;
+        }
+
+        // Configurar botões para importação
+        const inputArquivo = configurarUploadCSV();
+        
+        const btnImportarPadrao = document.createElement('button');
+        btnImportarPadrao.textContent = 'Importar CSV Padrão';
+        btnImportarPadrao.onclick = lerCSVPadrao;
+        
+        const btnImportarPersonalizado = document.createElement('button');
+        btnImportarPersonalizado.textContent = 'Importar CSV Personalizado';
+        btnImportarPersonalizado.onclick = () => inputArquivo.click();
+
+        // Adicionar botões à página
+        document.querySelector('section').appendChild(btnImportarPadrao);
+        document.querySelector('section').appendChild(btnImportarPersonalizado);
+    </script>
+
+    <div class="card">
+        <label for="nome1">Nome  :</label> <input type="text" id="nome1" name="nome1" value="Jennifer">
+        <p><label for="ciclo1">Ciclo :</label> <input type="number" id="ciclo1" name="ciclo1" min="0" max="3" value="1"></p>
+        <p><label for="might1">Might :</label> <input type="number" id="might1" name="might1" min="0" max="3" value="3"></p>
+        <p><label for="mind1">Mind  :</label> <input type="number" id="mind1" name="mind1" min="0" max="3" value="0"></p>
+        <label id="mettle1">Mettle:</label> <span>3</span>
+
+       
+        <p><label for="personagemCSV1">Personagem do CSV:</label>
+        <select id="personagemCSV1" name="personagemCSV1">
+            <option value="">Selecione um personagem</option>
+        </select></p>
+        <script>
+            // Atualiza o dropdown com os dados do CSV
+            function atualizarDropdownPersonagens(dados) {
+                const dropdown = document.getElementById('personagemCSV1');
+                dropdown.innerHTML = '<option value="">Selecione um personagem</option>';
+                
+                dados.forEach((linha, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = linha[0]; // Assume que o nome está na primeira coluna
+                    dropdown.appendChild(option);
+                });
+            }
+
+            // Modifica a função processarDadosCSV para atualizar o dropdown
+            const processarDadosCSVOriginal = processarDadosCSV;
+            processarDadosCSV = function(conteudoCSV) {
+                const dados = processarDadosCSVOriginal(conteudoCSV);
+                atualizarDropdownPersonagens(dados);
+                return dados;
+            }
+        </script>
+        <p><label for="dadoArma1">Dado de Ataque:</label>
+        <select id="dadoArma1" name="dadoArma1">
+            <option value="4">d4</option>
+            <option value="6">d6</option>
+            <option value="8">d8</option>
+            <option value="10">d10</option>
+            <option value="12">d12</option>
+        </select></p>
+        <label id="custoPA1">Custo PA: </label> <span>1</span>
+        <p><label id="totalPA1">Total PA:</label> <span>6</span></p>
+        <p><label id="Alcance1">Alcance:</label> <span>6</span></p>
+        <p><label for="tamanho1">Tamanho:</label>
+        <select id="tamanho1" name="tamanho1">
+            <option value="3">Médio</option>
+            <option value="2">Pequeno</option>
+            <option value="1">Minúsculo</option>
+        </select></p>
+        <p><label id="desloc1">Deslocamento:</label> <span>3</span></p>
+        <p><label id="pVida1">Pontos de Vida:</label> <span>14</span></p>
+    </div>
+    <div class="card">
+        <label for="nome2">Nome  :</label> <input type="text" id="nome2" name="nome2" value="Carlos">
+        <p><label for="ciclo2">Ciclo :</label> <input type="number" id="ciclo2" name="ciclo2" min="0" max="3" value="1"></p>
+        <p><label for="might2">Might :</label> <input type="number" id="might2" name="might2" min="0" max="3" value="3"></p>
+        <p><label for="mind2">Mind  :</label> <input type="number" id="mind2" name="mind2" min="0" max="3" value="0"></p>
+        <label id="mettle2">Mettle:</label> <span>3</span>
+        <p><label for="dadoArma2">Dado de Ataque:</label>
+        <select id="dadoArma2" name="dadoArma2">
+            <option value="4">d4</option>
+            <option value="6">d6</option>
+            <option value="8">d8</option>
+            <option value="10">d10</option>
+            <option value="12">d12</option>
+        </select></p>
+        <label id="custoPA2">Custo PA: </label> <span>1</span>
+        <p><label id="totalPA2">Total PA:</label> <span>6</span></p>
+        <p><label id="Alcance2">Alcance:</label> <span>6</span></p>
+        <p><label for="tamanho2">Tamanho:</label>
+        <select id="tamanho2" name="tamanho2">
+            <option value="3">Médio</option>
+            <option value="2">Pequeno</option>
+            <option value="1">Minúsculo</option>
+        </select></p>
+        <p><label id="desloc2">Deslocamento:</label> <span>3</span></p>
+        <p><label id="pVida2">Pontos de Vida:</label> <span>14</span></p>
+    </div>
+
+    <button id="rolaComb" style="
+    padding: 8px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    ">Rolar Combate</button>
+
+    <script>
+
+        const Army = [];
+        // Army[0] = new Personagem("Carlos", 1, 3, 0,8, 3);
+        // Army[1] = new Personagem("Jennifer", 1, 3, 0, 8, 3);
+        
+        document.getElementById('rolaComb').addEventListener('click', function() {
+        // Personagem 1
+        let nome1 = document.getElementById('nome1').value;
+        let ciclo1 = parseInt(document.getElementById('ciclo1').value);
+        let might1 = parseInt(document.getElementById('might1').value);
+        let mind1 = parseInt(document.getElementById('mind1').value);
+        let dadoArma1 = parseInt(document.getElementById('dadoArma1').value);
+        let tamanho1 = parseInt(document.getElementById('tamanho1').value);
+        
+        // Personagem 2
+        let nome2 = document.getElementById('nome2').value;
+        let ciclo2 = parseInt(document.getElementById('ciclo2').value);
+        let might2 = parseInt(document.getElementById('might2').value);
+        let mind2 = parseInt(document.getElementById('mind2').value);
+        let dadoArma2 = parseInt(document.getElementById('dadoArma2').value);
+        let tamanho2 = parseInt(document.getElementById('tamanho2').value);
+
+        // Atualiza o array Army com os novos valores
+        Army[0] = new Personagem(nome1, ciclo1, might1, mind1, dadoArma1, tamanho1);
+        Army[1] = new Personagem(nome2, ciclo2, might2, mind2, dadoArma2, tamanho2);
+        combate(Army[0],Army[1], rolarDados(50));
+    });
+    </script>
+
+</body>
+</html>

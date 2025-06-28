@@ -3,248 +3,805 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="script.js"></script>
-    <link rel="stylesheet" href="styles.css">
-    <title>PoiseSimulator</title>
-    
+    <title>POISE - Sistema de RPG</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Menu lateral */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 300px;
+            height: 100vh;
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(10px);
+            transition: left 0.3s ease;
+            z-index: 1000;
+            padding: 2rem;
+            border-right: 1px solid rgba(116, 185, 255, 0.2);
+        }
+
+        .sidebar.open {
+            left: 0;
+        }
+
+        .sidebar h2 {
+            color: #74b9ff;
+            margin-bottom: 2rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(116, 185, 255, 0.3);
+            padding-bottom: 1rem;
+        }
+
+        .sidebar .menu-item {
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar .menu-item:hover {
+            background: rgba(116, 185, 255, 0.1);
+            border-left-color: #74b9ff;
+            transform: translateX(5px);
+        }
+
+        .menu-toggle {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1001;
+            background: rgba(116, 185, 255, 0.2);
+            border: 1px solid rgba(116, 185, 255, 0.3);
+            color: #ffffff;
+            padding: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            background: rgba(116, 185, 255, 0.4);
+        }
+
+        /* Container principal */
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .logo-container {
+            margin-bottom: 3rem;
+        }
+
+        .logo-image {
+            max-width: 300px;
+            height: auto;
+            filter: drop-shadow(0 0 20px rgba(116, 185, 255, 0.4));
+            transition: all 0.3s ease;
+        }
+
+        .logo-image:hover {
+            transform: scale(1.05);
+            filter: drop-shadow(0 0 30px rgba(116, 185, 255, 0.6));
+        }
+
+        .main-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .main-button {
+            background: linear-gradient(135deg, rgba(116, 185, 255, 0.2), rgba(116, 185, 255, 0.1));
+            border: 2px solid rgba(116, 185, 255, 0.3);
+            color: #ffffff;
+            padding: 1.5rem 3rem;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            min-width: 300px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .main-button:hover::before {
+            left: 100%;
+        }
+
+        .main-button:hover {
+            transform: translateY(-3px);
+            border-color: rgba(116, 185, 255, 0.6);
+            box-shadow: 0 10px 30px rgba(116, 185, 255, 0.3);
+        }
+
+        .main-button:active {
+            transform: translateY(-1px);
+        }
+
+        /* Wizard Styles */
+        .character-creation-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #ffffff;
+            overflow-y: auto;
+            z-index: 2000;
+            display: none;
+        }
+
+        .character-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+            background: rgba(26, 26, 46, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(116, 185, 255, 0.2);
+        }
+
+        .back-button {
+            background: rgba(116, 185, 255, 0.2);
+            border: 1px solid rgba(116, 185, 255, 0.3);
+            color: #ffffff;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(116, 185, 255, 0.4);
+            transform: translateX(-2px);
+        }
+
+        .character-logo-container {
+            flex: 1;
+            text-align: center;
+        }
+
+        .character-logo {
+            max-width: 120px;
+            height: auto;
+            filter: drop-shadow(0 0 10px rgba(116, 185, 255, 0.3));
+        }
+
+        .character-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #74b9ff;
+            min-width: 150px;
+            text-align: right;
+        }
+
+        /* Wizard Container */
+        .wizard-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Step Indicator */
+        .wizard-step-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 3rem;
+        }
+
+        .step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(116, 185, 255, 0.2);
+            border: 2px solid rgba(116, 185, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #74b9ff;
+            transition: all 0.3s ease;
+        }
+
+        .step.active {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            border-color: #74b9ff;
+            color: #ffffff;
+            box-shadow: 0 0 20px rgba(116, 185, 255, 0.4);
+        }
+
+        .step-line {
+            width: 100px;
+            height: 2px;
+            background: rgba(116, 185, 255, 0.3);
+            margin: 0 1rem;
+        }
+
+        /* Wizard Content */
+        .wizard-content {
+            text-align: center;
+        }
+
+        .wizard-title {
+            font-size: 2rem;
+            color: #74b9ff;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .wizard-subtitle {
+            font-size: 1.2rem;
+            color: #dfe6e9;
+            margin-bottom: 3rem;
+        }
+
+        .points-display {
+            font-weight: bold;
+            font-size: 1.4rem;
+            color: #74b9ff;
+            text-shadow: 0 0 10px rgba(116, 185, 255, 0.5);
+        }
+
+        /* Triângulo de Atributos */
+        .attributes-triangle {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            height: 400px;
+            margin: 0 auto 3rem;
+        }
+
+        .triangle-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .attribute-node {
+            position: absolute;
+            background: rgba(26, 26, 46, 0.8);
+            border: 2px solid rgba(116, 185, 255, 0.3);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            z-index: 2;
+            min-width: 180px;
+            backdrop-filter: blur(10px);
+        }
+
+        .attribute-node:hover {
+            transform: scale(1.05);
+            border-color: rgba(116, 185, 255, 0.6);
+            box-shadow: 0 10px 30px rgba(116, 185, 255, 0.2);
+        }
+
+        /* Posicionamento dos nós */
+        .might-node {
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .mind-node {
+            bottom: 0;
+            left: 0;
+        }
+
+        .mettle-node {
+            bottom: 0;
+            right: 0;
+        }
+
+        .attribute-label {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #74b9ff;
+            margin-bottom: 1rem;
+            letter-spacing: 0.1em;
+        }
+
+        .attribute-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .attr-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            border: 2px solid rgba(116, 185, 255, 0.5);
+            background: rgba(116, 185, 255, 0.2);
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .attr-btn:hover:not(:disabled) {
+            background: rgba(116, 185, 255, 0.4);
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(116, 185, 255, 0.3);
+        }
+
+        .attr-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .attribute-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ffffff;
+            min-width: 30px;
+            text-shadow: 0 0 10px rgba(116, 185, 255, 0.5);
+        }
+
+        .attribute-description {
+            font-size: 0.9rem;
+            color: #b2bec3;
+            font-style: italic;
+        }
+
+        /* Estados dos nós baseados no valor */
+        .attribute-node.level-0 {
+            border-color: rgba(116, 185, 255, 0.3);
+            background: rgba(26, 26, 46, 0.8);
+        }
+
+        .attribute-node.level-1 {
+            border-color: rgba(241, 196, 15, 0.6);
+            background: rgba(241, 196, 15, 0.1);
+            box-shadow: 0 0 20px rgba(241, 196, 15, 0.2);
+        }
+
+        .attribute-node.level-2 {
+            border-color: rgba(231, 76, 60, 0.6);
+            background: rgba(231, 76, 60, 0.1);
+            box-shadow: 0 0 20px rgba(231, 76, 60, 0.2);
+        }
+
+        /* Wizard Actions */
+        .wizard-actions {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        .wizard-btn {
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            border: none;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .next-btn {
+            background: linear-gradient(135deg, #636e72, #2d3436);
+            color: #ffffff;
+            opacity: 0.5;
+        }
+
+        .next-btn.enabled {
+            background: linear-gradient(135deg, #00b894, #00a085);
+            opacity: 1;
+        }
+
+        .next-btn.enabled:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 184, 148, 0.4);
+        }
+
+        .next-btn:disabled {
+            cursor: not-allowed;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .logo-image {
+                max-width: 250px;
+            }
+
+            .main-button {
+                min-width: 250px;
+                padding: 1.2rem 2rem;
+                font-size: 1rem;
+            }
+
+            .wizard-container {
+                padding: 1rem;
+            }
+
+            .attributes-triangle {
+                height: 350px;
+                max-width: 400px;
+            }
+
+            .attribute-node {
+                min-width: 140px;
+                padding: 1rem;
+            }
+
+            .wizard-title {
+                font-size: 1.5rem;
+            }
+
+            .character-header {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .character-title {
+                text-align: center;
+                min-width: auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo-image {
+                max-width: 200px;
+            }
+
+            .main-button {
+                min-width: 200px;
+                padding: 1rem 1.5rem;
+            }
+
+            .attributes-triangle {
+                height: 300px;
+                max-width: 300px;
+            }
+
+            .attribute-node {
+                min-width: 120px;
+                padding: 0.8rem;
+            }
+
+            .step {
+                width: 30px;
+                height: 30px;
+                font-size: 0.9rem;
+            }
+
+            .step-line {
+                width: 60px;
+            }
+        }
+
+        /* Animações */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .main-button {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .main-button:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .logo-container {
+            animation: fadeInUp 0.8s ease forwards;
+        }
+    </style>
 </head>
 <body>
-    <main>
-        <section>
-            <h2>Simulador do Poise</h2>
-            <p>Criador de combates simulados aperte F12 para ver o console</p>
-        </section>
-    </main>
+    <!-- Menu Toggle Button -->
+    <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+
+    <!-- Menu Lateral -->
+    <div class="sidebar" id="sidebar">
+        <h2>POISE</h2>
+        <div class="menu-item">Sobre o Sistema</div>
+        <div class="menu-item">FAQ</div>
+        <div class="menu-item">Links Úteis</div>
+        <div class="menu-item">Configurações</div>
+    </div>
+
+    <!-- Container Principal -->
+    <div class="main-container" id="mainContainer">
+        <div class="logo-container">
+            <img src="poise_logo.png" alt="POISE Logo" class="logo-image">
+        </div>
+        
+        <div class="main-buttons">
+            <button class="main-button" onclick="loadCharacter()">Carregar Personagem</button>
+            <button class="main-button" onclick="createCharacter()">Criar Personagem</button>
+        </div>
+    </div>
+
+    <!-- Tela de Criação de Personagem (Wizard) -->
+    <div class="character-creation-screen" id="wizardScreen">
+        <!-- Header com logo menor -->
+        <div class="character-header">
+            <button class="back-button" onclick="showMainScreen()">← Voltar</button>
+            <div class="character-logo-container">
+                <img src="poise_logo.png" alt="POISE Logo" class="character-logo">
+            </div>
+            <div class="character-title">Criação de Personagem</div>
+        </div>
+
+        <!-- Wizard Content -->
+        <div class="wizard-container">
+            <div class="wizard-step-indicator">
+                <div class="step active">1</div>
+                <div class="step-line"></div>
+                <div class="step">2</div>
+                <div class="step-line"></div>
+                <div class="step">3</div>
+            </div>
+
+            <div class="wizard-content">
+                <h2 class="wizard-title">Distribua seus Atributos</h2>
+                <p class="wizard-subtitle">Você tem <span id="remainingPoints" class="points-display">4</span> pontos para distribuir</p>
+
+                <!-- Triângulo de Atributos -->
+                <div class="attributes-triangle">
+                    <!-- Might (Topo) -->
+                    <div class="attribute-node might-node level-0" data-attribute="might">
+                        <div class="attribute-label">MIGHT</div>
+                        <div class="attribute-controls">
+                            <button class="attr-btn decrease" onclick="changeAttribute('might', -1)">-</button>
+                            <div class="attribute-value" id="mightValue">0</div>
+                            <button class="attr-btn increase" onclick="changeAttribute('might', 1)">+</button>
+                        </div>
+                        <div class="attribute-description">Força física e resistência</div>
+                    </div>
+
+                    <!-- Mind (Esquerda) -->
+                    <div class="attribute-node mind-node level-0" data-attribute="mind">
+                        <div class="attribute-label">MIND</div>
+                        <div class="attribute-controls">
+                            <button class="attr-btn decrease" onclick="changeAttribute('mind', -1)">-</button>
+                            <div class="attribute-value" id="mindValue">0</div>
+                            <button class="attr-btn increase" onclick="changeAttribute('mind', 1)">+</button>
+                        </div>
+                        <div class="attribute-description">Inteligência e conhecimento</div>
+                    </div>
+
+                    <!-- Mettle (Direita) -->
+                    <div class="attribute-node mettle-node level-0" data-attribute="mettle">
+                        <div class="attribute-label">METTLE</div>
+                        <div class="attribute-controls">
+                            <button class="attr-btn decrease" onclick="changeAttribute('mettle', -1)">-</button>
+                            <div class="attribute-value" id="mettleValue">0</div>
+                            <button class="attr-btn increase" onclick="changeAttribute('mettle', 1)">+</button>
+                        </div>
+                        <div class="attribute-description">Coragem e determinação</div>
+                    </div>
+
+                    <!-- Linhas conectoras do triângulo -->
+                    <svg class="triangle-lines" viewBox="0 0 400 300">
+                        <line x1="200" y1="50" x2="100" y2="250" stroke="rgba(116, 185, 255, 0.3)" stroke-width="2"/>
+                        <line x1="200" y1="50" x2="300" y2="250" stroke="rgba(116, 185, 255, 0.3)" stroke-width="2"/>
+                        <line x1="100" y1="250" x2="300" y2="250" stroke="rgba(116, 185, 255, 0.3)" stroke-width="2"/>
+                    </svg>
+                </div>
+
+                <!-- Botão para prosseguir -->
+                <div class="wizard-actions">
+                    <button class="wizard-btn next-btn" onclick="nextWizardStep()" id="nextStepBtn" disabled>
+                        Prosseguir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('might1').addEventListener('change', () => atualizarMettle(1));
-            document.getElementById('mind1').addEventListener('change', () => atualizarMettle(1));
-            document.getElementById('ciclo1').addEventListener('change', () => atualizarMettle(1));
-            document.getElementById('might2').addEventListener('change', () => atualizarMettle(2));
-            document.getElementById('mind2').addEventListener('change', () => atualizarMettle(2));
-            document.getElementById('ciclo2').addEventListener('change', () => atualizarMettle(2));
+        // Variáveis globais
+        let attributes = {
+            might: 0,
+            mind: 0,
+            mettle: 0
+        };
+        const maxPoints = 4;
+        const maxAttributeValue = 2;
+
+        // Função para alternar menu
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        // Fechar menu ao clicar fora
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.querySelector('.menu-toggle');
             
-            document.getElementById('dadoArma1').addEventListener('change', function() {
-                const dadoSelecionado = parseInt(this.value);
-                const custoPA = dadoSelecionado < 7 ? 1 : 2;
-                document.getElementById('custoPA1').nextElementSibling.textContent = custoPA;
-            });
-
-            document.getElementById('dadoArma2').addEventListener('change', function() {
-                const dadoSelecionado = parseInt(this.value);
-                const custoPA = dadoSelecionado < 7 ? 1 : 2;
-                document.getElementById('custoPA2').nextElementSibling.textContent = custoPA;
-            });
-
-            function atualizarMettle(index) {
-                const might = parseInt(document.getElementById('might'+index).value) || 0;
-                const mind = parseInt(document.getElementById('mind'+index).value) || 0;
-                const ciclo = parseInt(document.getElementById('ciclo'+index).value) || 0;
-                
-                const mettle = (6 - (might + mind)>3? 3: 6 - (might + mind));
-                document.getElementById('mettle'+index).nextElementSibling.textContent = mettle;
-                document.getElementById('totalPA'+index).nextElementSibling.textContent = 3+mettle;
-                document.getElementById('Alcance'+index).nextElementSibling.textContent = might+mettle;
-                document.getElementById('pVida'+index).nextElementSibling.textContent = 10+mettle+ciclo;
+            if (!sidebar.contains(event.target) && !menuToggle.contains(event.target)) {
+                sidebar.classList.remove('open');
             }
-
-            document.getElementById('tamanho1').addEventListener('change', function() {
-                const tam = parseInt(this.value);
-                document.getElementById('desloc1').nextElementSibling.textContent = tam;
-            });
-
-            document.getElementById('tamanho2').addEventListener('change', function() {
-                const tam = parseInt(this.value);
-                document.getElementById('desloc2').nextElementSibling.textContent = tam;
-            });
         });
-        // Função para ler arquivo CSV padrão
-        async function lerCSVPadrao() {
-            try {
-                const resposta = await fetch('Cálculo de Danos Possíveis - Menus.csv');
-                const dados = await resposta.text();
-                processarDadosCSV(dados);
-            } catch (erro) {
-                console.error('Erro ao ler arquivo CSV padrão:', erro);
+
+        // Função para carregar personagem
+        function loadCharacter() {
+            alert('Funcionalidade de carregar personagem em desenvolvimento!');
+        }
+
+        // Função para criar personagem (mostrar wizard)
+        function createCharacter() {
+            document.getElementById('mainContainer').style.display = 'none';
+            document.getElementById('wizardScreen').style.display = 'block';
+            updateNextButton();
+        }
+
+        // Função para voltar à tela principal
+        function showMainScreen() {
+            document.getElementById('wizardScreen').style.display = 'none';
+            document.getElementById('mainContainer').style.display = 'flex';
+            
+            // Reset attributes
+            attributes = { might: 0, mind: 0, mettle: 0 };
+            document.getElementById('mightValue').textContent = '0';
+            document.getElementById('mindValue').textContent = '0';
+            document.getElementById('mettleValue').textContent = '0';
+            updateRemainingPoints();
+            updateAttributeNodes();
+            updateNextButton();
+        }
+
+        // Função para alterar atributos
+        function changeAttribute(attributeName, change) {
+            const currentValue = attributes[attributeName];
+            const newValue = currentValue + change;
+            const totalPoints = Object.values(attributes).reduce((sum, val) => sum + val, 0);
+            
+            // Verificar limites
+            if (newValue < 0 || newValue > maxAttributeValue) {
+                return;
+            }
+            
+            // Verificar se há pontos suficientes para aumentar
+            if (change > 0 && totalPoints >= maxPoints) {
+                return;
+            }
+            
+            // Atualizar o valor
+            attributes[attributeName] = newValue;
+            
+            // Atualizar a interface
+            document.getElementById(attributeName + 'Value').textContent = newValue;
+            updateRemainingPoints();
+            updateAttributeNodes();
+            updateNextButton();
+        }
+
+        // Função para atualizar pontos restantes
+        function updateRemainingPoints() {
+            const totalUsed = Object.values(attributes).reduce((sum, val) => sum + val, 0);
+            const remaining = maxPoints - totalUsed;
+            document.getElementById('remainingPoints').textContent = remaining;
+            
+            // Atualizar cor dos pontos restantes
+            const pointsDisplay = document.getElementById('remainingPoints');
+            if (remaining === 0) {
+                pointsDisplay.style.color = '#27ae60';
+            } else if (remaining <= 1) {
+                pointsDisplay.style.color = '#f39c12';
+            } else {
+                pointsDisplay.style.color = '#74b9ff';
             }
         }
 
-        // Função para permitir upload de CSV personalizado
-        function configurarUploadCSV() {
-            const inputArquivo = document.createElement('input');
-            inputArquivo.type = 'file';
-            inputArquivo.accept = '.csv';
-            inputArquivo.style.display = 'none';
-            
-            inputArquivo.addEventListener('change', (evento) => {
-                const arquivo = evento.target.files[0];
-                if (arquivo) {
-                    const leitor = new FileReader();
-                    leitor.onload = (e) => {
-                        const conteudo = e.target.result;
-                        processarDadosCSV(conteudo);
-                    };
-                    leitor.readAsText(arquivo);
-                }
-            });
-
-            document.body.appendChild(inputArquivo);
-            return inputArquivo;
-        }
-
-        // Função para processar os dados do CSV
-        function processarDadosCSV(conteudoCSV) {
-            const linhas = conteudoCSV.split('\n');
-            const dados = [];
-            
-            for (let i = 1; i < linhas.length; i++) { // Começa do 1 para pular o cabeçalho
-                if (linhas[i].trim() !== '') {
-                    const valores = linhas[i].split(',');
-                    dados.push(valores);
-                }
-            }
-            
-            console.log('Dados importados:', dados);
-            return dados;
-        }
-
-        // Configurar botões para importação
-        const inputArquivo = configurarUploadCSV();
-        
-        const btnImportarPadrao = document.createElement('button');
-        btnImportarPadrao.textContent = 'Importar CSV Padrão';
-        btnImportarPadrao.onclick = lerCSVPadrao;
-        
-        const btnImportarPersonalizado = document.createElement('button');
-        btnImportarPersonalizado.textContent = 'Importar CSV Personalizado';
-        btnImportarPersonalizado.onclick = () => inputArquivo.click();
-
-        // Adicionar botões à página
-        document.querySelector('section').appendChild(btnImportarPadrao);
-        document.querySelector('section').appendChild(btnImportarPersonalizado);
-    </script>
-
-    <div class="card">
-        <label for="nome1">Nome  :</label> <input type="text" id="nome1" name="nome1" value="Jennifer">
-        <p><label for="ciclo1">Ciclo :</label> <input type="number" id="ciclo1" name="ciclo1" min="0" max="3" value="1"></p>
-        <p><label for="might1">Might :</label> <input type="number" id="might1" name="might1" min="0" max="3" value="3"></p>
-        <p><label for="mind1">Mind  :</label> <input type="number" id="mind1" name="mind1" min="0" max="3" value="0"></p>
-        <label id="mettle1">Mettle:</label> <span>3</span>
-
-       
-        <p><label for="personagemCSV1">Personagem do CSV:</label>
-        <select id="personagemCSV1" name="personagemCSV1">
-            <option value="">Selecione um personagem</option>
-        </select></p>
-        <script>
-            // Atualiza o dropdown com os dados do CSV
-            function atualizarDropdownPersonagens(dados) {
-                const dropdown = document.getElementById('personagemCSV1');
-                dropdown.innerHTML = '<option value="">Selecione um personagem</option>';
+        // Função para atualizar aparência dos nós de atributos
+        function updateAttributeNodes() {
+            Object.keys(attributes).forEach(attr => {
+                const node = document.querySelector(`[data-attribute="${attr}"]`);
+                const value = attributes[attr];
                 
-                dados.forEach((linha, index) => {
-                    const option = document.createElement('option');
-                    option.value = index;
-                    option.textContent = linha[0]; // Assume que o nome está na primeira coluna
-                    dropdown.appendChild(option);
-                });
+                // Remover classes antigas
+                node.classList.remove('level-0', 'level-1', 'level-2');
+                
+                // Adicionar nova classe baseada no valor
+                node.classList.add(`level-${value}`);
+                
+                // Atualizar botões
+                const decreaseBtn = node.querySelector('.decrease');
+                const increaseBtn = node.querySelector('.increase');
+                
+                decreaseBtn.disabled = value <= 0;
+                
+                const totalPoints = Object.values(attributes).reduce((sum, val) => sum + val, 0);
+                increaseBtn.disabled = value >= maxAttributeValue || totalPoints >= maxPoints;
+            });
+        }
+
+        // Função para atualizar botão de próximo passo
+        function updateNextButton() {
+            const totalPoints = Object.values(attributes).reduce((sum, val) => sum + val, 0);
+            const nextBtn = document.getElementById('nextStepBtn');
+            
+            if (totalPoints === maxPoints) {
+                nextBtn.disabled = false;
+                nextBtn.classList.add('enabled');
+            } else {
+                nextBtn.disabled = true;
+                nextBtn.classList.remove('enabled');
             }
+        }
 
-            // Modifica a função processarDadosCSV para atualizar o dropdown
-            const processarDadosCSVOriginal = processarDadosCSV;
-            processarDadosCSV = function(conteudoCSV) {
-                const dados = processarDadosCSVOriginal(conteudoCSV);
-                atualizarDropdownPersonagens(dados);
-                return dados;
+        // Função para próximo passo do wizard
+        function nextWizardStep() {
+            alert('Próxima tela do wizard em desenvolvimento!\n\nAtributos selecionados:\n' +
+                  `Might: ${attributes.might}\n` +
+                  `Mind: ${attributes.mind}\n` +
+                  `Mettle: ${attributes.mettle}`);
+        }
+
+        // Fechar menu com ESC
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                document.getElementById('sidebar').classList.remove('open');
             }
-        </script>
-        <p><label for="dadoArma1">Dado de Ataque:</label>
-        <select id="dadoArma1" name="dadoArma1">
-            <option value="4">d4</option>
-            <option value="6">d6</option>
-            <option value="8">d8</option>
-            <option value="10">d10</option>
-            <option value="12">d12</option>
-        </select></p>
-        <label id="custoPA1">Custo PA: </label> <span>1</span>
-        <p><label id="totalPA1">Total PA:</label> <span>6</span></p>
-        <p><label id="Alcance1">Alcance:</label> <span>6</span></p>
-        <p><label for="tamanho1">Tamanho:</label>
-        <select id="tamanho1" name="tamanho1">
-            <option value="3">Médio</option>
-            <option value="2">Pequeno</option>
-            <option value="1">Minúsculo</option>
-        </select></p>
-        <p><label id="desloc1">Deslocamento:</label> <span>3</span></p>
-        <p><label id="pVida1">Pontos de Vida:</label> <span>14</span></p>
-    </div>
-    <div class="card">
-        <label for="nome2">Nome  :</label> <input type="text" id="nome2" name="nome2" value="Carlos">
-        <p><label for="ciclo2">Ciclo :</label> <input type="number" id="ciclo2" name="ciclo2" min="0" max="3" value="1"></p>
-        <p><label for="might2">Might :</label> <input type="number" id="might2" name="might2" min="0" max="3" value="3"></p>
-        <p><label for="mind2">Mind  :</label> <input type="number" id="mind2" name="mind2" min="0" max="3" value="0"></p>
-        <label id="mettle2">Mettle:</label> <span>3</span>
-        <p><label for="dadoArma2">Dado de Ataque:</label>
-        <select id="dadoArma2" name="dadoArma2">
-            <option value="4">d4</option>
-            <option value="6">d6</option>
-            <option value="8">d8</option>
-            <option value="10">d10</option>
-            <option value="12">d12</option>
-        </select></p>
-        <label id="custoPA2">Custo PA: </label> <span>1</span>
-        <p><label id="totalPA2">Total PA:</label> <span>6</span></p>
-        <p><label id="Alcance2">Alcance:</label> <span>6</span></p>
-        <p><label for="tamanho2">Tamanho:</label>
-        <select id="tamanho2" name="tamanho2">
-            <option value="3">Médio</option>
-            <option value="2">Pequeno</option>
-            <option value="1">Minúsculo</option>
-        </select></p>
-        <p><label id="desloc2">Deslocamento:</label> <span>3</span></p>
-        <p><label id="pVida2">Pontos de Vida:</label> <span>14</span></p>
-    </div>
+        });
 
-    <button id="rolaComb" style="
-    padding: 8px 15px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-top: 10px;
-    ">Rolar Combate</button>
-
-    <script>
-
-        const Army = [];
-        // Army[0] = new Personagem("Carlos", 1, 3, 0,8, 3);
-        // Army[1] = new Personagem("Jennifer", 1, 3, 0, 8, 3);
-        
-        document.getElementById('rolaComb').addEventListener('click', function() {
-        // Personagem 1
-        let nome1 = document.getElementById('nome1').value;
-        let ciclo1 = parseInt(document.getElementById('ciclo1').value);
-        let might1 = parseInt(document.getElementById('might1').value);
-        let mind1 = parseInt(document.getElementById('mind1').value);
-        let dadoArma1 = parseInt(document.getElementById('dadoArma1').value);
-        let tamanho1 = parseInt(document.getElementById('tamanho1').value);
-        
-        // Personagem 2
-        let nome2 = document.getElementById('nome2').value;
-        let ciclo2 = parseInt(document.getElementById('ciclo2').value);
-        let might2 = parseInt(document.getElementById('might2').value);
-        let mind2 = parseInt(document.getElementById('mind2').value);
-        let dadoArma2 = parseInt(document.getElementById('dadoArma2').value);
-        let tamanho2 = parseInt(document.getElementById('tamanho2').value);
-
-        // Atualiza o array Army com os novos valores
-        Army[0] = new Personagem(nome1, ciclo1, might1, mind1, dadoArma1, tamanho1);
-        Army[1] = new Personagem(nome2, ciclo2, might2, mind2, dadoArma2, tamanho2);
-        combate(Army[0],Army[1], rolarDados(50));
-    });
+        // Inicializar interface
+        document.addEventListener('DOMContentLoaded', function() {
+            updateRemainingPoints();
+            updateAttributeNodes();
+            updateNextButton();
+        });
     </script>
-
 </body>
 </html>
+
