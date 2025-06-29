@@ -1,0 +1,6 @@
+Valor,Nome,Descrição,Bônus_Atributo,Tamanho_Preferido
+humano,Humano,Adaptável e versátil, os humanos são conhecidos por sua determinação e ambição.,+1 em qualquer,Médio
+elfo,Elfo,Elegantes e longevos, os elfos têm uma conexão natural com a magia e a natureza.,+2 Mind,Médio
+anao,Anão,Resistentes e habilidosos, os anões são mestres da metalurgia e da engenharia.,+2 Might,Pequeno
+orc,Orc,Ferozes e fortes, os orcs são guerreiros naturais com grande força física.,+2 Might,Grande
+halfling,Halfling,Pequenos e ágeis, os halflings são conhecidos por sua sorte e destreza.,+2 Mettle,Pequeno 

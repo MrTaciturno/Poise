@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste - Carregamento CSV POISE</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Teste - Carregamento CSV POISE</h1>
+    
+    <div class="test-section">
+        <h2>Status dos Arquivos CSV</h2>
+        <div id="fileStatus"></div>
+        <button onclick="testCSVLoading()">🔄 Testar Carregamento</button>
+        <button onclick="showLoadedData()">📊 Mostrar Dados Carregados</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Dados Carregados</h2>
+        <div id="loadedData"></div>
+    </div>
+
+    <script>
+        let loadedData = {
+            names: [],
+            races: [],
+            sizes: [],
+            descriptions: [],
+            menuItems: [],
+            systemConfig: {}
+        };
+
+        // Função para fazer parse de CSV
+        function parseCSV(csvText) {
+            const lines = csvText.split('\n');
+            const headers = lines[0].split(',').map(h => h.trim());
+            const data = [];
+            
+            for (let i = 1; i < lines.length; i++) {
+                if (lines[i].trim()) {
+                    const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+                    const row = {};
+                    headers.forEach((header, index) => {
+                        row[header] = values[index] || '';
+                    });
+                    data.push(row);
+                }
+            }
+            
+            return data;
+        }
+
+        // Função para testar carregamento dos CSV
+        async function testCSVLoading() {
+            const statusDiv = document.getElementById('fileStatus');
+            statusDiv.innerHTML = '<div class="info">🔄 Testando carregamento dos arquivos CSV...</div>';
+
+            try {
+                // Testar cada arquivo CSV
+                const files = [
+                    'POISE_Data_Nomes_Aleatorios.csv',
+                    'POISE_Data_Racas.csv',
+                    'POISE_Data_Tamanhos.csv',
+                    'POISE_Data_Descricoes_Aleatorias.csv',
+                    'POISE_Data_Menu_Lateral.csv',
+                    'POISE_Data_Configuracoes_Sistema.csv'
+                ];
+
+                let successCount = 0;
+                let errorCount = 0;
+
+                for (const file of files) {
+                    try {
+                        const response = await fetch(file);
+                        if (response.ok) {
+                            const text = await response.text();
+                            const data = parseCSV(text);
+                            
+                            // Armazenar dados baseado no arquivo
+                            if (file.includes('Nomes')) {
+                                loadedData.names = data.map(row => row.Nome);
+                            } else if (file.includes('Racas')) {
+                                loadedData.races = data.map(row => ({ value: row.Valor, label: row.Nome }));
+                            } else if (file.includes('Tamanhos')) {
+                                loadedData.sizes = data.map(row => ({ value: row.Valor, label: row.Nome }));
+                            } else if (file.includes('Descricoes')) {
+                                loadedData.descriptions = data.map(row => row.Descrição);
+                            } else if (file.includes('Menu')) {
+                                loadedData.menuItems = data;
+                            } else if (file.includes('Configuracoes')) {
+                                loadedData.systemConfig = {};
+                                data.forEach(row => {
+                                    loadedData.systemConfig[row.Configuração] = row.Valor;
+                                });
+                            }
+                            
+                            successCount++;
+                        } else {
+                            errorCount++;
+                        }
+                    } catch (error) {
+                        errorCount++;
+                    }
+                }
+
+                // Mostrar resultado
+                if (errorCount === 0) {
+                    statusDiv.innerHTML = `
+                        <div class="success">✅ Todos os arquivos CSV carregados com sucesso!</div>
+                        <div class="info">📊 ${successCount} arquivos processados</div>
+                    `;
+                } else {
+                    statusDiv.innerHTML = `
+                        <div class="error">❌ Erro ao carregar ${errorCount} arquivo(s)</div>
+                        <div class="info">✅ ${successCount} arquivos carregados com sucesso</div>
+                    `;
+                }
+
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="error">❌ Erro geral: ${error.message}</div>`;
+            }
+        }
+
+        // Função para mostrar dados carregados
+        function showLoadedData() {
+            const dataDiv = document.getElementById('loadedData');
+            
+            dataDiv.innerHTML = `
+                <h3>📋 Resumo dos Dados</h3>
+                <div class="info">
+                    <strong>Nomes:</strong> ${loadedData.names.length} carregados<br>
+                    <strong>Raças:</strong> ${loadedData.races.length} carregadas<br>
+                    <strong>Tamanhos:</strong> ${loadedData.sizes.length} carregados<br>
+                    <strong>Descrições:</strong> ${loadedData.descriptions.length} carregadas<br>
+                    <strong>Itens do Menu:</strong> ${loadedData.menuItems.length} carregados<br>
+                    <strong>Configurações:</strong> ${Object.keys(loadedData.systemConfig).length} carregadas
+                </div>
+
+                <h3>🎲 Exemplo de Nomes</h3>
+                <pre>${loadedData.names.slice(0, 5).join(', ')}</pre>
+
+                <h3>🏃‍♂️ Raças Disponíveis</h3>
+                <pre>${loadedData.races.map(r => r.label).join(', ')}</pre>
+
+                <h3>📏 Tamanhos Disponíveis</h3>
+                <pre>${loadedData.sizes.map(s => s.label).join(', ')}</pre>
+
+                <h3>🍔 Itens do Menu</h3>
+                <pre>${loadedData.menuItems.map(item => item.Item).join(', ')}</pre>
+
+                <h3>⚙️ Configurações do Sistema</h3>
+                <pre>${JSON.stringify(loadedData.systemConfig, null, 2)}</pre>
+            `;
+        }
+
+        // Testar automaticamente ao carregar a página
+        window.addEventListener('load', () => {
+            setTimeout(testCSVLoading, 1000);
+        });
+    </script>
+</body>
+</html> 

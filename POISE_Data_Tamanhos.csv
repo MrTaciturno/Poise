@@ -1,0 +1,4 @@
+Valor,Nome,Descrição,Modificador_Combate,Modificador_Força
+pequeno,Pequeno,Personagens pequenos são ágeis e difíceis de acertar, mas têm menos força física.,+1 evasão,-1
+medio,Médio,O tamanho médio é o padrão para a maioria das raças, oferecendo equilíbrio.,0,0
+grande,Grande,Personagens grandes são mais fortes e intimidantes, mas menos ágeis.,-1 evasão,+1 
