@@ -12,8 +12,8 @@ let characterData = {
     size: '',
     description: ''
 };
-const maxPoints = 4;
-const maxAttributeValue = 2;
+const maxPoints = 3;
+const maxAttributeValue = 3;
 
 // Dados carregados dos CSV
 let randomNames = [];
@@ -146,8 +146,10 @@ function loadDefaultData() {
     ];
 
     systemConfig = {
-        'Pontos_Máximos_Atributos': '4',
-        'Valor_Máximo_Atributo': '2',
+        'Pontos_Máximos_Atributos': '3',
+        'Valor_Máximo_Atributo': '3',
+        'Valor_Mínimo_Atributo': '-1',
+
         'Limite_Nome_Caracteres': '50',
         'Limite_Descrição_Caracteres': '500',
         'Tema_Padrão': 'Escuro',
@@ -324,7 +326,7 @@ function nextWizardStep() {
         // Validar atributos
         const totalPoints = Object.values(attributes).reduce((sum, val) => sum + val, 0);
         if (totalPoints !== maxPoints) {
-            alert('Você deve distribuir todos os 4 pontos antes de prosseguir!');
+            alert('Você deve distribuir todos os 3 pontos antes de prosseguir!');
             return;
         }
         showWizardStep(3);
@@ -406,7 +408,7 @@ function changeAttribute(attributeName, change) {
     const totalPoints = Object.values(attributes).reduce((sum, val) => sum + val, 0);
     
     // Verificar limites
-    if (newValue < 0 || newValue > maxAttributeValue) {
+    if (newValue < systemConfig['Valor_Mínimo_Atributo'] || newValue > maxAttributeValue) {
         return;
     }
     
@@ -437,8 +439,10 @@ function updateRemainingPoints() {
         pointsDisplay.style.color = '#27ae60';
     } else if (remaining <= 1) {
         pointsDisplay.style.color = '#f39c12';
-    } else {
+    } else if (remaining <= 2) {
         pointsDisplay.style.color = '#74b9ff';
+    } else {
+        pointsDisplay.style.color = '#e74c3c';
     }
 }
 
@@ -449,7 +453,7 @@ function updateAttributeNodes() {
         const value = attributes[attr];
         
         // Remover classes antigas
-        node.classList.remove('level-0', 'level-1', 'level-2');
+        node.classList.remove('level-0', 'level-1', 'level-2', 'level-3');
         
         // Adicionar nova classe baseada no valor
         node.classList.add(`level-${value}`);
@@ -458,7 +462,7 @@ function updateAttributeNodes() {
         const decreaseBtn = node.querySelector('.decrease');
         const increaseBtn = node.querySelector('.increase');
         
-        decreaseBtn.disabled = value <= 0;
+        decreaseBtn.disabled = value <= systemConfig['Valor_Mínimo_Atributo'];
         
         const totalPoints = Object.values(attributes).reduce((sum, val) => sum + val, 0);
         increaseBtn.disabled = value >= maxAttributeValue || totalPoints >= maxPoints;
@@ -546,7 +550,7 @@ function randomizeCharacterData() {
     const randomRace = randomRaces[Math.floor(Math.random() * randomRaces.length)];
     
     // Gerar tamanho aleatório
-    const randomSize = randomSizes[Math.floor(Math.random() * randomSizes.length)];
+    //const randomSize = randomSizes[Math.floor(Math.random() * randomSizes.length)];
     
     // Gerar descrição aleatória
     const randomDescription = randomDescriptions[Math.floor(Math.random() * randomDescriptions.length)];
@@ -554,7 +558,7 @@ function randomizeCharacterData() {
     // Preencher os campos
     document.getElementById('characterName').value = randomName;
     document.getElementById('characterRace').value = randomRace.value;
-    document.getElementById('characterSize').value = randomSize.value;
+    //document.getElementById('characterSize').value = randomSize.value;
     document.getElementById('characterDescription').value = randomDescription;
     
     // Atualizar contador de caracteres
@@ -566,7 +570,7 @@ function randomizeCharacterData() {
     // Salvar dados
     characterData.name = randomName;
     characterData.race = randomRace.value;
-    characterData.size = randomSize.value;
+    //characterData.size = randomSize.value;
     characterData.description = randomDescription;
     
     // Efeito visual de confirmação
@@ -597,8 +601,9 @@ async function reloadCSVData() {
 function showSystemInfo() {
     const info = `Sistema POISE v1.0\n\n` +
                 `Configurações:\n` +
-                `• Pontos Máximos: ${systemConfig['Pontos_Máximos_Atributos'] || '4'}\n` +
-                `• Valor Máximo Atributo: ${systemConfig['Valor_Máximo_Atributo'] || '2'}\n` +
+                `• Pontos Máximos: ${systemConfig['Pontos_Máximos_Atributos'] || '3'}\n` +
+                `• Valor Máximo Atributo: ${systemConfig['Valor_Máximo_Atributo'] || '3'}\n` +
+                `• Valor Mínimo Atributo: ${systemConfig['Valor_Mínimo_Atributo'] || '-1'}\n` +
                 `• Limite Nome: ${systemConfig['Limite_Nome_Caracteres'] || '50'} caracteres\n` +
                 `• Limite Descrição: ${systemConfig['Limite_Descrição_Caracteres'] || '500'} caracteres\n` +
                 `• Tema: ${systemConfig['Tema_Padrão'] || 'Escuro'}\n` +
@@ -606,7 +611,7 @@ function showSystemInfo() {
                 `Dados Carregados:\n` +
                 `• Nomes: ${randomNames.length}\n` +
                 `• Raças: ${randomRaces.length}\n` +
-                `• Tamanhos: ${randomSizes.length}\n` +
+                //`• Tamanhos: ${randomSizes.length}\n` +
                 `• Descrições: ${randomDescriptions.length}\n` +
                 `• Itens do Menu: ${menuItems.length}`;
     
