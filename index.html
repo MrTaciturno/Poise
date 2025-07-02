@@ -78,9 +78,9 @@
                     <div class="form-group">
                         <label for="characterSize">Tamanho</label>
                         <select id="characterSize">
-                            <option value="">Selecione o tamanho</option>
-                            <option value="pequeno">Pequeno</option>
+                            <!-- <option value="">Selecione o tamanho</option> -->
                             <option value="medio">Médio</option>
+                            <option value="pequeno">Pequeno</option>
                             <option value="grande">Grande</option>
                         </select>
                     </div>
@@ -120,7 +120,7 @@
                             <div class="attribute-value" id="mightValue">0</div>
                             <button class="attr-btn increase" onclick="changeAttribute('might', 1)">+</button>
                         </div>
-                        <div class="attribute-description">Força física e resistência</div>
+                        <div class="attribute-description">Força física e Destreza</div>
                     </div>
 
                     <!-- Mind (Esquerda) -->
@@ -131,7 +131,7 @@
                             <div class="attribute-value" id="mindValue">0</div>
                             <button class="attr-btn increase" onclick="changeAttribute('mind', 1)">+</button>
                         </div>
-                        <div class="attribute-description">Inteligência e conhecimento</div>
+                        <div class="attribute-description">Inteligência e Sabedoria</div>
                     </div>
 
                     <!-- Mettle (Direita) -->
@@ -158,16 +158,18 @@
                     <button class="wizard-btn back-btn" onclick="previousWizardStep()">
                         Voltar
                     </button>
-                    <button class="wizard-btn next-btn" onclick="nextWizardStep()" id="nextStepBtn" disabled>
+                    <button class="wizard-btn next-btn" onclick="nextWizardStep()" id="nextStepBtn2" disabled>
                         Prosseguir
                     </button>
                 </div>
             </div>
 
-            <!-- Tela 3: (Futura) -->
+            <!-- Tela 3: Resumo do Personagem -->
             <div class="wizard-content" id="wizardStep3" style="display: none;">
-                <h2 class="wizard-title">Tela 3</h2>
-                <p class="wizard-subtitle">Em desenvolvimento...</p>
+                <h2 class="wizard-title">Resumo do Personagem</h2>
+                <p class="wizard-subtitle">Confira os dados do seu personagem antes de finalizar</p>
+
+                <div id="characterSummary"></div>
 
                 <!-- Botões de navegação -->
                 <div class="wizard-actions">

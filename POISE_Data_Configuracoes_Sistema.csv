@@ -1,6 +1,6 @@
 Configuração,Valor,Descrição
-Pontos_Máximos_Atributos,4,Número máximo de pontos para distribuir entre atributos
-Valor_Máximo_Atributo,2,Valor máximo que um atributo pode ter
+Pontos_Máximos_Atributos,3,Número máximo de pontos para distribuir entre atributos
+Valor_Máximo_Atributo,3,Valor máximo que um atributo pode ter
 Limite_Nome_Caracteres,50,Limite de caracteres para o nome do personagem
 Limite_Descrição_Caracteres,500,Limite de caracteres para a descrição do personagem
 Tema_Padrão,Escuro,Tema visual padrão da interface

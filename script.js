@@ -1,4 +1,3 @@
-
 // Variáveis globais
 let currentWizardStep = 1;
 let attributes = {
@@ -203,7 +202,7 @@ function updateSizeOptions() {
     const sizeSelect = document.getElementById('characterSize');
     if (sizeSelect) {
         // Limpar opções existentes (exceto a primeira)
-        sizeSelect.innerHTML = '<option value="">Selecione o tamanho</option>';
+        sizeSelect.innerHTML = '<option value="medio">Médio</option>';
         
         // Adicionar novas opções
         randomSizes.forEach(size => {
@@ -299,6 +298,8 @@ function showWizardStep(step) {
         updateCharacterFormValidation();
     } else if (step === 2) {
         updateNextButton();
+    } else if (step === 3) {
+        preencherResumoPersonagem();
     }
 }
 
@@ -329,7 +330,7 @@ function nextWizardStep() {
             alert('Você deve distribuir todos os 3 pontos antes de prosseguir!');
             return;
         }
-        showWizardStep(3);
+        showWizardStep(3); // Agora mostra o resumo
     }
 }
 
@@ -453,7 +454,7 @@ function updateAttributeNodes() {
         const value = attributes[attr];
         
         // Remover classes antigas
-        node.classList.remove('level-0', 'level-1', 'level-2', 'level-3');
+        node.classList.remove('level-0', 'level-1', 'level-2', 'level-3', 'level--1');
         
         // Adicionar nova classe baseada no valor
         node.classList.add(`level-${value}`);
@@ -466,20 +467,23 @@ function updateAttributeNodes() {
         
         const totalPoints = Object.values(attributes).reduce((sum, val) => sum + val, 0);
         increaseBtn.disabled = value >= maxAttributeValue || totalPoints >= maxPoints;
+        updateNextButton();
     });
 }
 
 // Função para atualizar botão de próximo passo
 function updateNextButton() {
     const totalPoints = Object.values(attributes).reduce((sum, val) => sum + val, 0);
-    const nextBtn = document.getElementById('nextStepBtn');
+    const nextBtn = document.getElementById('nextStepBtn2');
     
-    if (totalPoints === maxPoints) {
-        nextBtn.disabled = false;
-        nextBtn.classList.add('enabled');
-    } else {
-        nextBtn.disabled = true;
-        nextBtn.classList.remove('enabled');
+    if (nextBtn) {
+        if (totalPoints === maxPoints) {
+            nextBtn.disabled = false;
+            nextBtn.classList.add('enabled');
+        } else {
+            nextBtn.disabled = true;
+            nextBtn.classList.remove('enabled');
+        }
     }
 }
 
@@ -616,4 +620,24 @@ function showSystemInfo() {
                 `• Itens do Menu: ${menuItems.length}`;
     
     alert(info);
+}
+
+// Função para preencher o resumo do personagem
+function preencherResumoPersonagem() {
+    // Preencher os dados do personagem no resumo
+    const resumoDiv = document.getElementById('characterSummary');
+    if (!resumoDiv) return;
+    resumoDiv.innerHTML = `
+        <h3>Resumo do Personagem</h3>
+        <p><strong>Nome:</strong> ${characterData.name}</p>
+        <p><strong>Raça:</strong> ${characterData.race}</p>
+        <p><strong>Tamanho:</strong> ${characterData.size}</p>
+        <p><strong>Descrição:</strong> ${characterData.description}</p>
+        <h4>Atributos</h4>
+        <ul>
+            <li><strong>Might:</strong> ${attributes.might}</li>
+            <li><strong>Mind:</strong> ${attributes.mind}</li>
+            <li><strong>Mettle:</strong> ${attributes.mettle}</li>
+        </ul>
+    `;
 }

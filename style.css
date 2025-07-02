@@ -525,7 +525,12 @@ body {
 }
 
 /* Estados dos nós baseados no valor */
-/*criar nós para cada nível de atributo - inclusive negativo*/
+.attribute-node.level--1 {
+    border-color: rgba(52, 152, 219, 0.6);
+    background: rgba(52, 152, 219, 0.1);
+    box-shadow: 0 0 20px rgba(52, 152, 219, 0.2);
+}
+
 .attribute-node.level-0 {
     border-color: rgba(116, 185, 255, 0.3);
     background: rgba(26, 26, 46, 0.8);
