@@ -1,190 +1,108 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<script src="script.js"></script>
-<link rel="stylesheet" type="text/css" href="style.css">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>POISE - Sistema de RPG</title>
-   
-</head>
-<body>
-    <!-- Menu Toggle Button -->
-    <button class="menu-toggle" onclick="toggleMenu()">☰</button>
-
-    <!-- Menu Lateral -->
-    <div class="sidebar" id="sidebar">
-        <h2>POISE</h2>
-        <!-- Os itens do menu serão carregados dinamicamente dos CSV -->
-    </div>
-
-    <!-- Container Principal -->
-    <div class="main-container" id="mainContainer">
-        <div class="logo-container">
-            <img src="poise_logo.png" alt="POISE Logo" class="logo-image">
-        </div>
+<!-- 
+Este é um exemplo básico de frontend para um sistema de cadastro e login.
+O backend Node.js/Express seria responsável pelas rotas reais, persistência e autenticação dos dados.
+Exemplo mínimo para integração server-side.
+-->
+<div class="auth-container">
+    <h2>Cadastro / Login</h2>
+    <form id="authForm">
+        <label for="username">Usuário:</label>
+        <input type="text" id="username" name="username" required autocomplete="username">
         
-        <div class="main-buttons">
-            <button class="main-button" onclick="loadCharacter()">Carregar Personagem</button>
-            <button class="main-button" onclick="createCharacter()">Criar Personagem</button>
-            <button class="main-button info-button" onclick="showSystemInfo()">ℹ️ Informações do Sistema</button>
-        </div>
-    </div>
+        <label for="password">Senha:</label>
+        <input type="password" id="password" name="password" required autocomplete="current-password">
+        
+        <button type="submit">Entrar / Registrar</button>
+    </form>
+    <div id="authMessage"></div>
+</div>
 
-    <!-- Tela de Criação de Personagem (Wizard) -->
-    <div class="character-creation-screen" id="wizardScreen">
-        <!-- Header com logo menor -->
-        <div class="character-header">
-            <button class="back-button" onclick="showMainScreen()">← Voltar</button>
-            <div class="character-logo-container">
-                <img src="poise_logo.png" alt="POISE Logo" class="character-logo">
-            </div>
-            <div class="character-title">Criação de Personagem</div>
-        </div>
+<div class="user-info" id="userInfo" style="display:none;">
+    <h3>Olá, <span id="loggedUsername"></span>!</h3>
+    <form id="nameForm">
+        <label for="displayName">Seu Nome:</label>
+        <input type="text" id="displayName" name="displayName" required>
+        <button type="submit">Salvar Nome</button>
+    </form>
+    <div id="nameMessage"></div>
+    <button onclick="logout()">Sair</button>
+</div>
 
-        <!-- Wizard Content -->
-        <div class="wizard-container">
-            <div class="wizard-step-indicator">
-                <div class="step active" id="step1">1</div>
-                <div class="step-line"></div>
-                <div class="step" id="step2">2</div>
-                <div class="step-line"></div>
-                <div class="step" id="step3">3</div>
-            </div>
+<script>
+document.getElementById('authForm').onsubmit = async function(e) {
+    e.preventDefault();
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+    const msgDiv = document.getElementById('authMessage');
+    if (data.success) {
+        document.querySelector('.auth-container').style.display = 'none';
+        document.getElementById('userInfo').style.display = '';
+        document.getElementById('loggedUsername').textContent = username;
+        fetchDisplayName();
+        msgDiv.textContent = '';
+    } else {
+        msgDiv.style.color = 'red';
+        msgDiv.textContent = data.message || 'Erro no login/registro.';
+    }
+};
 
-            <!-- Tela 1: Dados do Personagem -->
-            <div class="wizard-content" id="wizardStep1">
-                <h2 class="wizard-title">Dados do Personagem</h2>
-                <p class="wizard-subtitle">Preencha as informações básicas do seu personagem</p>
+async function fetchDisplayName() {
+    const res = await fetch('/api/name');
+    const data = await res.json();
+    if (data.displayName)
+        document.getElementById('displayName').value = data.displayName;
+    else
+        document.getElementById('displayName').value = '';
+}
 
-                <div class="character-form">
-                    <div class="form-group">
-                        <label for="characterName">Nome do Personagem</label>
-                        <input type="text" id="characterName" placeholder="Digite o nome do seu personagem" maxlength="50">
-                    </div>
+document.getElementById('nameForm').onsubmit = async function(e) {
+    e.preventDefault();
+    const displayName = document.getElementById('displayName').value;
+    const res = await fetch('/api/name', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ displayName })
+    });
+    const data = await res.json();
+    const msgDiv = document.getElementById('nameMessage');
+    if (data.success) {
+        msgDiv.style.color = 'green';
+        msgDiv.textContent = 'Nome salvo!';
+    } else {
+        msgDiv.style.color = 'red';
+        msgDiv.textContent = data.message || 'Erro ao salvar o nome.';
+    }
+};
 
-                    <div class="form-group">
-                        <label for="characterRace">Raça</label>
-                        <select id="characterRace">
-                            <option value="">Selecione uma raça</option>
-                            <option value="humano">Humano</option>
-                            <option value="elfo">Elfo</option>
-                            <option value="anao">Anão</option>
-                            <option value="orc">Orc</option>
-                            <option value="halfling">Halfling</option>
-                        </select>
-                    </div>
+function logout() {
+    fetch('/api/logout', {method:'POST'}).then(() => {
+        document.querySelector('.auth-container').style.display = '';
+        document.getElementById('userInfo').style.display = 'none';
+        document.getElementById('authForm').reset();
+        document.getElementById('nameForm').reset();
+        document.getElementById('authMessage').textContent = '';
+        document.getElementById('nameMessage').textContent = '';
+    });
+}
 
-                    <div class="form-group">
-                        <label for="characterSize">Tamanho</label>
-                        <select id="characterSize">
-                            <!-- <option value="">Selecione o tamanho</option> -->
-                            <option value="medio">Médio</option>
-                            <option value="pequeno">Pequeno</option>
-                            <option value="grande">Grande</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="characterDescription">Descrição</label>
-                        <textarea id="characterDescription" placeholder="Descreva seu personagem (aparência, personalidade, história...)" rows="4" maxlength="500"></textarea>
-                        <div class="char-counter">
-                            <span id="descriptionCounter">0</span>/500
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Botões de navegação -->
-                <div class="wizard-actions">
-                    <button class="wizard-btn random-btn" onclick="randomizeCharacterData()">
-                        🎲 Random
-                    </button>
-                    <button class="wizard-btn next-btn" onclick="nextWizardStep()" id="nextStepBtn" disabled>
-                        Prosseguir
-                    </button>
-                </div>
-            </div>
-
-            <!-- Tela 2: Atributos -->
-            <div class="wizard-content" id="wizardStep2" style="display: none;">
-                <h2 class="wizard-title">Distribua seus Atributos</h2>
-                <p class="wizard-subtitle">Você tem <span id="remainingPoints" class="points-display">4</span> pontos para distribuir</p>
-
-                <!-- Triângulo de Atributos -->
-                <div class="attributes-triangle">
-                    <!-- Might (Topo) -->
-                    <div class="attribute-node might-node level-0" data-attribute="might">
-                        <div class="attribute-label">MIGHT</div>
-                        <div class="attribute-controls">
-                            <button class="attr-btn decrease" onclick="changeAttribute('might', -1)">-</button>
-                            <div class="attribute-value" id="mightValue">0</div>
-                            <button class="attr-btn increase" onclick="changeAttribute('might', 1)">+</button>
-                        </div>
-                        <div class="attribute-description">Força física e Destreza</div>
-                    </div>
-
-                    <!-- Mind (Esquerda) -->
-                    <div class="attribute-node mind-node level-0" data-attribute="mind">
-                        <div class="attribute-label">MIND</div>
-                        <div class="attribute-controls">
-                            <button class="attr-btn decrease" onclick="changeAttribute('mind', -1)">-</button>
-                            <div class="attribute-value" id="mindValue">0</div>
-                            <button class="attr-btn increase" onclick="changeAttribute('mind', 1)">+</button>
-                        </div>
-                        <div class="attribute-description">Inteligência e Sabedoria</div>
-                    </div>
-
-                    <!-- Mettle (Direita) -->
-                    <div class="attribute-node mettle-node level-0" data-attribute="mettle">
-                        <div class="attribute-label">METTLE</div>
-                        <div class="attribute-controls">
-                            <button class="attr-btn decrease" onclick="changeAttribute('mettle', -1)">-</button>
-                            <div class="attribute-value" id="mettleValue">0</div>
-                            <button class="attr-btn increase" onclick="changeAttribute('mettle', 1)">+</button>
-                        </div>
-                        <div class="attribute-description">Coragem e determinação</div>
-                    </div>
-
-                    <!-- Linhas conectoras do triângulo -->
-                    <svg class="triangle-lines" viewBox="0 0 400 300">
-                        <line x1="200" y1="50" x2="100" y2="250" stroke="rgba(116, 185, 255, 0.3)" stroke-width="2"/>
-                        <line x1="200" y1="50" x2="300" y2="250" stroke="rgba(116, 185, 255, 0.3)" stroke-width="2"/>
-                        <line x1="100" y1="250" x2="300" y2="250" stroke="rgba(116, 185, 255, 0.3)" stroke-width="2"/>
-                    </svg>
-                </div>
-
-                <!-- Botões de navegação -->
-                <div class="wizard-actions">
-                    <button class="wizard-btn back-btn" onclick="previousWizardStep()">
-                        Voltar
-                    </button>
-                    <button class="wizard-btn next-btn" onclick="nextWizardStep()" id="nextStepBtn2" disabled>
-                        Prosseguir
-                    </button>
-                </div>
-            </div>
-
-            <!-- Tela 3: Resumo do Personagem -->
-            <div class="wizard-content" id="wizardStep3" style="display: none;">
-                <h2 class="wizard-title">Resumo do Personagem</h2>
-                <p class="wizard-subtitle">Confira os dados do seu personagem antes de finalizar</p>
-
-                <div id="characterSummary"></div>
-
-                <!-- Botões de navegação -->
-                <div class="wizard-actions">
-                    <button class="wizard-btn back-btn" onclick="previousWizardStep()">
-                        Voltar
-                    </button>
-                    <button class="wizard-btn next-btn" onclick="finishWizard()">
-                        Finalizar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-</body>
-</html>
-
+// Tente checar se já está logado, ao iniciar
+window.onload = function() {
+    fetch('/api/name').then(async resp => {
+        if (resp.ok) {
+            const data = await resp.json();
+            if (data.username) {
+                document.querySelector('.auth-container').style.display = 'none';
+                document.getElementById('userInfo').style.display = '';
+                document.getElementById('loggedUsername').textContent = data.username;
+                document.getElementById('displayName').value = data.displayName || '';
+            }
+        }
+    });
+}
+</script>
