@@ -1,5 +1,11 @@
-const http = require('http');
-const server = http.createServer((req, res) => {
-  res.end('Olá, Node.js!');
+const express = require('express');
+const app = express();
+const port = process.env.PORT || 3000;
+
+app.get('/', (req, res) => {
+  res.send('Site rodando no Render!');
 });
-server.listen(3000);
+
+app.listen(port, () => {
+  console.log(`Servidor rodando na porta ${port}`);
+});
